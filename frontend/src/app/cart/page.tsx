@@ -1,19 +1,35 @@
 "use client";
 
 import Link from "next/link";
-import { Trash2, Plus, Minus, ShoppingBag, ArrowRight, Tag } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import {
+  ArrowRight,
+  Minus,
+  Plus,
+  ShoppingBag,
+  Tag,
+  Trash2,
+} from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
-import { useState } from "react";
+import { createOrder } from "@/lib/orders";
 
-const FALLBACK = "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&q=80";
+const FALLBACK_IMAGE =
+  "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&q=80";
+const priceFormatter = new Intl.NumberFormat("en-IN");
+
+const formatCurrency = (value: number): string =>
+  `Rs. ${priceFormatter.format(value)}`;
 
 export default function CartPage() {
+  const router = useRouter();
   const { state, removeItem, updateQty, clearCart } = useCart();
   const { user } = useAuth();
   const [coupon, setCoupon] = useState("");
   const [couponApplied, setCouponApplied] = useState(false);
   const [couponError, setCouponError] = useState("");
+  const [placingOrder, setPlacingOrder] = useState(false);
 
   const discount = couponApplied ? Math.floor(state.total * 0.1) : 0;
   const shipping = state.total > 999 ? 0 : 99;
@@ -23,25 +39,41 @@ export default function CartPage() {
     if (coupon.toUpperCase() === "PRIDE10") {
       setCouponApplied(true);
       setCouponError("");
-    } else {
-      setCouponError("Invalid coupon code");
-      setCouponApplied(false);
+      return;
     }
+
+    setCouponError("Invalid coupon code");
+    setCouponApplied(false);
+  };
+
+  const handlePlaceOrder = () => {
+    if (!user || state.items.length === 0) return;
+
+    setPlacingOrder(true);
+    const order = createOrder({
+      items: state.items,
+      user,
+      shipping,
+      discount,
+      total: finalTotal,
+    });
+    clearCart();
+    router.push(`/orders?order=${encodeURIComponent(order.id)}&placed=1`);
   };
 
   if (state.items.length === 0) {
     return (
-      <div className="min-h-screen bg-dark-900 pt-20 flex items-center justify-center">
-        <div className="text-center px-4">
-          <div className="w-24 h-24 bg-dark-800 border border-white/5 flex items-center justify-center mx-auto mb-6">
-            <ShoppingBag className="w-10 h-10 text-white/20" />
+      <div className="flex min-h-screen items-center justify-center bg-dark-900 pt-20">
+        <div className="px-4 text-center">
+          <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center border border-white/5 bg-dark-800">
+            <ShoppingBag className="h-10 w-10 text-white/20" />
           </div>
-          <h2 className="font-display text-4xl text-white tracking-wider mb-3" style={{ fontFamily: "var(--font-display)" }}>
+          <h2 className="mb-3 font-display text-4xl tracking-wider text-white">
             YOUR CART IS EMPTY
           </h2>
-          <p className="text-white/40 mb-8">Add some parts to get started.</p>
+          <p className="mb-8 text-white/40">Add a few parts to begin your order.</p>
           <Link href="/products" className="btn-primary inline-flex items-center gap-2">
-            Browse Products <ArrowRight className="w-4 h-4" />
+            Browse Products <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
       </div>
@@ -50,159 +82,220 @@ export default function CartPage() {
 
   return (
     <div className="min-h-screen bg-dark-900 pt-20">
-      <div className="bg-dark-800 border-b border-white/5">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div className="border-b border-white/5 bg-dark-800">
+        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
           <p className="section-label mb-2">Review</p>
-          <h1 className="font-display text-5xl text-white tracking-wider" style={{ fontFamily: "var(--font-display)" }}>
+          <h1 className="font-display text-5xl tracking-wider text-white">
             YOUR CART
           </h1>
-          <p className="text-white/40 mt-1">{state.count} item{state.count !== 1 ? "s" : ""}</p>
+          <p className="mt-1 text-white/40">
+            {state.count} item{state.count !== 1 ? "s" : ""}
+          </p>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Items */}
-          <div className="lg:col-span-2 space-y-4">
-            {/* Header */}
-            <div className="hidden sm:grid grid-cols-12 gap-4 px-4 pb-2 border-b border-white/5">
-              <span className="col-span-6 text-white/30 text-xs tracking-widest uppercase">Product</span>
-              <span className="col-span-2 text-white/30 text-xs tracking-widest uppercase text-center">Price</span>
-              <span className="col-span-2 text-white/30 text-xs tracking-widest uppercase text-center">Qty</span>
-              <span className="col-span-2 text-white/30 text-xs tracking-widest uppercase text-right">Total</span>
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+          <div className="space-y-4 lg:col-span-2">
+            <div className="hidden grid-cols-12 gap-4 border-b border-white/5 px-4 pb-2 sm:grid">
+              <span className="col-span-6 text-xs uppercase tracking-widest text-white/30">
+                Product
+              </span>
+              <span className="col-span-2 text-center text-xs uppercase tracking-widest text-white/30">
+                Price
+              </span>
+              <span className="col-span-2 text-center text-xs uppercase tracking-widest text-white/30">
+                Qty
+              </span>
+              <span className="col-span-2 text-right text-xs uppercase tracking-widest text-white/30">
+                Total
+              </span>
             </div>
 
             {state.items.map((item) => (
-              <div key={item._id} className="bg-dark-800 border border-white/5 p-4 grid grid-cols-12 gap-4 items-center group hover:border-white/10 transition-colors">
-                {/* Image + name */}
-                <div className="col-span-12 sm:col-span-6 flex items-center gap-4">
-                  <div className="w-16 h-16 bg-dark-700 flex-shrink-0 overflow-hidden">
+              <div
+                key={item._id}
+                className="group grid grid-cols-12 items-center gap-4 border border-white/5 bg-dark-800 p-4 transition-colors hover:border-white/10"
+              >
+                <div className="col-span-12 flex items-center gap-4 sm:col-span-6">
+                  <div className="h-16 w-16 flex-shrink-0 overflow-hidden bg-dark-700">
                     <img
-                      src={item.image || FALLBACK}
+                      src={item.image || FALLBACK_IMAGE}
                       alt={item.name}
-                      className="w-full h-full object-cover"
-                      onError={(e) => { (e.target as HTMLImageElement).src = FALLBACK; }}
+                      className="h-full w-full object-cover"
+                      onError={(event) => {
+                        (event.target as HTMLImageElement).src = FALLBACK_IMAGE;
+                      }}
                     />
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <Link href={`/products/${item._id}`} className="text-white text-sm font-semibold line-clamp-2 hover:text-brand-300 transition-colors">
+                  <div className="min-w-0 flex-1">
+                    <Link
+                      href={`/products/${item._id}`}
+                      className="line-clamp-2 text-sm font-semibold text-white transition-colors hover:text-brand-300"
+                    >
                       {item.name}
                     </Link>
-                    {item.category && <p className="text-white/30 text-xs mt-0.5">{item.category}</p>}
+                    {item.category && (
+                      <p className="mt-0.5 text-xs text-white/30">{item.category}</p>
+                    )}
                   </div>
                 </div>
 
-                {/* Price */}
-                <div className="col-span-4 sm:col-span-2 text-center">
-                  <span className="text-white/60 text-sm">₹{item.price.toLocaleString("en-IN")}</span>
+                <div className="col-span-4 text-center sm:col-span-2">
+                  <span className="text-sm text-white/60">
+                    {formatCurrency(item.price)}
+                  </span>
                 </div>
 
-                {/* Qty controls */}
-                <div className="col-span-5 sm:col-span-2 flex items-center justify-center gap-2">
-                  <button onClick={() => updateQty(item._id, item.quantity - 1)} className="w-7 h-7 bg-dark-700 border border-white/10 hover:border-brand-500/50 text-white flex items-center justify-center transition-colors">
-                    <Minus className="w-3 h-3" />
+                <div className="col-span-5 flex items-center justify-center gap-2 sm:col-span-2">
+                  <button
+                    onClick={() => updateQty(item._id, item.quantity - 1)}
+                    className="flex h-7 w-7 items-center justify-center border border-white/10 bg-dark-700 text-white transition-colors hover:border-brand-500/50"
+                  >
+                    <Minus className="h-3 w-3" />
                   </button>
-                  <span className="text-white text-sm w-6 text-center font-semibold">{item.quantity}</span>
-                  <button onClick={() => updateQty(item._id, item.quantity + 1)} className="w-7 h-7 bg-dark-700 border border-white/10 hover:border-brand-500/50 text-white flex items-center justify-center transition-colors">
-                    <Plus className="w-3 h-3" />
+                  <span className="w-6 text-center text-sm font-semibold text-white">
+                    {item.quantity}
+                  </span>
+                  <button
+                    onClick={() => updateQty(item._id, item.quantity + 1)}
+                    className="flex h-7 w-7 items-center justify-center border border-white/10 bg-dark-700 text-white transition-colors hover:border-brand-500/50"
+                  >
+                    <Plus className="h-3 w-3" />
                   </button>
                 </div>
 
-                {/* Subtotal + remove */}
-                <div className="col-span-3 sm:col-span-2 flex items-center justify-end gap-3">
-                  <span className="text-brand-400 font-bold text-sm">₹{(item.price * item.quantity).toLocaleString("en-IN")}</span>
-                  <button onClick={() => removeItem(item._id)} className="text-white/20 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100">
-                    <Trash2 className="w-4 h-4" />
+                <div className="col-span-3 flex items-center justify-end gap-3 sm:col-span-2">
+                  <span className="text-sm font-bold text-brand-400">
+                    {formatCurrency(item.price * item.quantity)}
+                  </span>
+                  <button
+                    onClick={() => removeItem(item._id)}
+                    className="text-white/20 opacity-0 transition-colors group-hover:opacity-100 hover:text-red-400"
+                    aria-label={`Remove ${item.name}`}
+                    title={`Remove ${item.name}`}
+                  >
+                    <Trash2 className="h-4 w-4" />
                   </button>
                 </div>
               </div>
             ))}
 
-            <div className="flex justify-between items-center pt-2">
-              <Link href="/products" className="text-white/40 hover:text-white text-sm flex items-center gap-2 transition-colors">
-                ← Continue Shopping
+            <div className="flex items-center justify-between pt-2">
+              <Link
+                href="/products"
+                className="flex items-center gap-2 text-sm text-white/40 transition-colors hover:text-white"
+              >
+                Continue Shopping
               </Link>
-              <button onClick={clearCart} className="text-red-400/60 hover:text-red-400 text-xs tracking-wider uppercase transition-colors">
+              <button
+                onClick={clearCart}
+                className="text-xs uppercase tracking-wider text-red-400/60 transition-colors hover:text-red-400"
+              >
                 Clear Cart
               </button>
             </div>
           </div>
 
-          {/* Order Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-dark-800 border border-white/5 p-6 sticky top-24">
-              <h3 className="font-display text-xl text-white tracking-wider mb-6" style={{ fontFamily: "var(--font-display)" }}>
+            <div className="sticky top-24 border border-white/5 bg-dark-800 p-6">
+              <h3 className="mb-6 font-display text-xl tracking-wider text-white">
                 ORDER SUMMARY
               </h3>
 
-              {/* Coupon */}
               <div className="mb-6">
-                <label className="text-white/40 text-xs tracking-widest uppercase block mb-2">Coupon Code</label>
+                <label className="mb-2 block text-xs uppercase tracking-widest text-white/40">
+                  Coupon Code
+                </label>
                 <div className="flex gap-2">
                   <div className="relative flex-1">
-                    <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/30" />
+                    <Tag className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-white/30" />
                     <input
                       type="text"
                       value={coupon}
-                      onChange={(e) => { setCoupon(e.target.value.toUpperCase()); setCouponError(""); }}
+                      onChange={(event) => {
+                        setCoupon(event.target.value.toUpperCase());
+                        setCouponError("");
+                      }}
                       placeholder="PRIDE10"
-                      className="w-full bg-dark-700 border border-white/10 pl-9 pr-3 py-2 text-white placeholder-white/20 text-xs focus:outline-none focus:border-brand-500 transition-colors uppercase"
+                      className="w-full border border-white/10 bg-dark-700 py-2 pl-9 pr-3 text-xs uppercase text-white placeholder-white/20 transition-colors focus:border-brand-500 focus:outline-none"
                     />
                   </div>
-                  <button onClick={applyCoupon} className="px-3 py-2 bg-dark-700 border border-white/10 text-white/60 hover:text-white hover:border-white/30 text-xs transition-colors">
+                  <button
+                    onClick={applyCoupon}
+                    className="border border-white/10 bg-dark-700 px-3 py-2 text-xs text-white/60 transition-colors hover:border-white/30 hover:text-white"
+                  >
                     Apply
                   </button>
                 </div>
-                {couponError && <p className="text-red-400 text-xs mt-1">{couponError}</p>}
-                {couponApplied && <p className="text-green-400 text-xs mt-1">10% discount applied!</p>}
+                {couponError && <p className="mt-1 text-xs text-red-400">{couponError}</p>}
+                {couponApplied && (
+                  <p className="mt-1 text-xs text-green-400">10% discount applied.</p>
+                )}
               </div>
 
-              {/* Breakdown */}
-              <div className="space-y-3 border-t border-white/5 pt-4 mb-4">
+              <div className="mb-4 space-y-3 border-t border-white/5 pt-4">
                 <div className="flex justify-between text-sm">
                   <span className="text-white/50">Subtotal</span>
-                  <span className="text-white">₹{state.total.toLocaleString("en-IN")}</span>
+                  <span className="text-white">{formatCurrency(state.total)}</span>
                 </div>
                 {discount > 0 && (
                   <div className="flex justify-between text-sm">
                     <span className="text-green-400">Discount (10%)</span>
-                    <span className="text-green-400">−₹{discount.toLocaleString("en-IN")}</span>
+                    <span className="text-green-400">- {formatCurrency(discount)}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-sm">
                   <span className="text-white/50">Shipping</span>
                   <span className={shipping === 0 ? "text-green-400" : "text-white"}>
-                    {shipping === 0 ? "FREE" : `₹${shipping}`}
+                    {shipping === 0 ? "FREE" : formatCurrency(shipping)}
                   </span>
                 </div>
                 {shipping === 0 && (
-                  <p className="text-green-400/60 text-xs">Free shipping on orders over ₹999</p>
+                  <p className="text-xs text-green-400/70">
+                    Free shipping on orders above Rs. 999
+                  </p>
                 )}
               </div>
 
-              <div className="flex justify-between items-center border-t border-white/10 pt-4 mb-6">
-                <span className="text-white font-semibold">Total</span>
-                <span className="text-brand-400 font-bold text-xl">₹{finalTotal.toLocaleString("en-IN")}</span>
+              <div className="mb-6 flex items-center justify-between border-t border-white/10 pt-4">
+                <span className="font-semibold text-white">Total</span>
+                <span className="text-xl font-bold text-brand-400">
+                  {formatCurrency(finalTotal)}
+                </span>
               </div>
 
               {user ? (
-                <button className="btn-primary w-full flex items-center justify-center gap-2">
-                  Proceed to Checkout <ArrowRight className="w-4 h-4" />
+                <button
+                  onClick={handlePlaceOrder}
+                  disabled={placingOrder}
+                  className="btn-primary flex w-full items-center justify-center gap-2 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {placingOrder ? "Creating Order..." : "Place Demo Order"}
+                  <ArrowRight className="h-4 w-4" />
                 </button>
               ) : (
                 <div className="space-y-3">
-                  <Link href="/auth/login?redirect=/cart" className="btn-primary w-full flex items-center justify-center gap-2">
-                    Sign In to Checkout <ArrowRight className="w-4 h-4" />
+                  <Link
+                    href="/auth/login?redirect=/cart"
+                    className="btn-primary flex w-full items-center justify-center gap-2"
+                  >
+                    Sign In to Checkout <ArrowRight className="h-4 w-4" />
                   </Link>
-                  <p className="text-white/30 text-xs text-center">
+                  <p className="text-center text-xs text-white/30">
                     New customer?{" "}
-                    <Link href="/auth/signup" className="text-brand-400 hover:text-brand-300">Create account</Link>
+                    <Link
+                      href="/auth/signup"
+                      className="text-brand-400 transition-colors hover:text-brand-300"
+                    >
+                      Create account
+                    </Link>
                   </p>
                 </div>
               )}
 
-              <p className="text-white/20 text-xs text-center mt-4">
-                Secure checkout · COD available
+              <p className="mt-4 text-center text-xs text-white/20">
+                Demo checkout creates a trackable order instantly.
               </p>
             </div>
           </div>

@@ -18,5 +18,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: "http://localhost:3000/contact",
       lastModified: new Date(),
     },
+    {
+      url: "http://localhost:3000/orders",
+      lastModified: new Date(),
+    },
   ];
 }

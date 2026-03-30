@@ -200,6 +200,9 @@ export default function Navbar() {
                       <p className="text-white/40 text-xs">{user.email}</p>
                     </div>
                   </div>
+                  <Link href="/orders" className="block py-3 border-b border-white/5 text-white/70 text-sm font-medium transition-colors hover:text-white" onClick={() => setMobileOpen(false)}>
+                    My Orders
+                  </Link>
                   <button onClick={() => { logout(); setMobileOpen(false); }} className="w-full flex items-center justify-center gap-2 py-2 border border-red-500/30 text-red-400 text-sm">
                     <LogOut className="w-4 h-4" /> Sign Out
                   </button>
