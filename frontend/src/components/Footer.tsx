@@ -117,7 +117,7 @@ export default function Footer() {
 
         <div className="border-t border-white/5 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-white/25 text-xs">
-            © {new Date().getFullYear()} Pride Auto Store. All rights reserved.
+            Copyright {new Date().getFullYear()} Pride Auto Store. All rights reserved.
           </p>
           <div className="flex gap-6">
             {["Privacy Policy", "Terms of Service", "Shipping Policy"].map((item) => (

@@ -55,7 +55,7 @@ export default function LoginPage() {
               Sign in to access your orders, saved parts, and exclusive deals.
             </p>
           </div>
-          <p className="text-white/20 text-sm">© {new Date().getFullYear()} Pride Auto Store</p>
+          <p className="text-white/20 text-sm">Copyright {new Date().getFullYear()} Pride Auto Store</p>
         </div>
       </div>
 

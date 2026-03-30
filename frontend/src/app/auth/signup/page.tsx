@@ -53,7 +53,7 @@ export default function SignupPage() {
             </h2>
             <p className="text-white/40 text-lg max-w-sm">Get access to exclusive deals, order tracking, and a curated list of parts for your vehicle.</p>
           </div>
-          <p className="text-white/20 text-sm">© {new Date().getFullYear()} Pride Auto Store</p>
+          <p className="text-white/20 text-sm">Copyright {new Date().getFullYear()} Pride Auto Store</p>
         </div>
       </div>
 
