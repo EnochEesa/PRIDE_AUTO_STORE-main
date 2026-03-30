@@ -9,7 +9,7 @@ const TRUST_ITEMS = [
   {
     icon: Truck,
     title: "Pan-India Delivery",
-    desc: "Ships in 24–48 hours",
+    desc: "Ships in 24-48 hours",
   },
   {
     icon: RotateCcw,
@@ -19,7 +19,7 @@ const TRUST_ITEMS = [
   {
     icon: Headphones,
     title: "Expert Support",
-    desc: "Mon–Sat, 9 AM – 7 PM",
+    desc: "Mon-Sat, 9 AM - 9 PM",
   },
 ];
 

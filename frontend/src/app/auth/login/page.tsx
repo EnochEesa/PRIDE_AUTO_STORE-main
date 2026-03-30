@@ -32,7 +32,6 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-dark-900 flex">
-      {/* Left panel - branding */}
       <div className="hidden lg:flex flex-1 relative overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center"
@@ -45,7 +44,7 @@ export default function LoginPage() {
               <Zap className="w-5 h-5 text-white" fill="currentColor" />
             </div>
             <span className="text-2xl tracking-[0.15em] text-white" style={{ fontFamily: "var(--font-display)" }}>
-              PRIDE AUTO
+              PRIDE AUTO STORE
             </span>
           </Link>
           <div>
@@ -56,19 +55,17 @@ export default function LoginPage() {
               Sign in to access your orders, saved parts, and exclusive deals.
             </p>
           </div>
-          <p className="text-white/20 text-sm">© {new Date().getFullYear()} Pride Auto Store</p>
+          <p className="text-white/20 text-sm">� {new Date().getFullYear()} Pride Auto Store</p>
         </div>
       </div>
 
-      {/* Right panel - form */}
       <div className="flex-1 flex items-center justify-center px-4 sm:px-8 lg:px-16 py-20">
         <div className="w-full max-w-md">
-          {/* Mobile logo */}
           <Link href="/" className="flex items-center gap-2 mb-10 lg:hidden">
             <div className="w-8 h-8 bg-brand-500 flex items-center justify-center">
               <Zap className="w-5 h-5 text-white" fill="currentColor" />
             </div>
-            <span className="text-2xl tracking-[0.15em] text-white" style={{ fontFamily: "var(--font-display)" }}>PRIDE AUTO</span>
+            <span className="text-2xl tracking-[0.15em] text-white" style={{ fontFamily: "var(--font-display)" }}>PRIDE AUTO STORE</span>
           </Link>
 
           <p className="section-label mb-3">Welcome back</p>
@@ -113,7 +110,7 @@ export default function LoginPage() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
+                  placeholder="********"
                   className="w-full bg-dark-700 border border-white/10 pl-12 pr-12 py-3 text-white placeholder-white/20 text-sm focus:outline-none focus:border-brand-500 transition-colors"
                 />
                 <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white transition-colors">

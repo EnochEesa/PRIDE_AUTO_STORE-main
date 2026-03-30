@@ -2,7 +2,7 @@ import { Shield, Award, Users, Clock } from "lucide-react";
 import Link from "next/link";
 
 const MILESTONES = [
-  { year: "2010", event: "Founded in Chennai with 500 SKUs" },
+  { year: "2000", event: "Founded in Coimbatore with a focused catalogue of spare parts" },
   { year: "2014", event: "Expanded to pan-India delivery network" },
   { year: "2018", event: "Crossed 25,000 happy customers" },
   { year: "2022", event: "Launched online catalogue with 10,000+ parts" },
@@ -11,7 +11,7 @@ const MILESTONES = [
 
 const VALUES = [
   { icon: Shield, title: "Quality First", desc: "Every part is tested and certified before it reaches you." },
-  { icon: Award, title: "Trusted Brand", desc: "15+ years of serving workshops and car owners across India." },
+  { icon: Award, title: "Trusted Brand", desc: "25+ years of serving workshops and car owners across India." },
   { icon: Users, title: "Customer Focus", desc: "Dedicated support team to help you find the right part." },
   { icon: Clock, title: "Fast Delivery", desc: "Same-day dispatch for orders placed before 2 PM." },
 ];
@@ -19,7 +19,6 @@ const VALUES = [
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-dark-900 pt-20">
-      {/* Hero */}
       <div className="relative bg-dark-800 overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center opacity-20"
@@ -32,16 +31,14 @@ export default function AboutPage() {
             className="font-display text-6xl md:text-8xl text-white tracking-wider mb-6"
             style={{ fontFamily: "var(--font-display)" }}
           >
-            ABOUT PRIDE AUTO
+            ABOUT PRIDE AUTO STORE
           </h1>
           <p className="text-white/50 text-lg max-w-2xl leading-relaxed">
-            Born from a passion for automobiles and a frustration with low-quality parts,
-            Pride Auto Store has been India's trusted spare parts destination since 2010.
+            Pride Auto Store has been Coimbatore's trusted spare parts destination since 2000.
           </p>
         </div>
       </div>
 
-      {/* Story section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div>
@@ -54,13 +51,13 @@ export default function AboutPage() {
             </h2>
             <div className="space-y-4 text-white/50 leading-relaxed">
               <p>
-                Pride Auto Store started as a small workshop supplies vendor in Chennai.
-                Over the years, we grew into one of South India's largest online
+                Pride Auto Store started as a small spare parts shop in Coimbatore.
+                Over the years, we grew into one of South India's trusted
                 catalogues for genuine and aftermarket automobile spare parts.
               </p>
               <p>
-                Today, we serve over 50,000 customers — from individual car owners to
-                large fleet operators — with a catalogue of 10,000+ SKUs spanning
+                Today, we serve over 50,000 customers from individual car owners to
+                large fleet operators with a catalogue of 10,000+ SKUs spanning
                 engine components, brake systems, electrical parts, and more.
               </p>
               <p>
@@ -73,7 +70,6 @@ export default function AboutPage() {
             </Link>
           </div>
 
-          {/* Milestones */}
           <div>
             <p className="section-label mb-8">Our Journey</p>
             <div className="relative">
@@ -101,7 +97,6 @@ export default function AboutPage() {
         </div>
       </div>
 
-      {/* Values */}
       <div className="bg-dark-800 border-t border-white/5 py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">

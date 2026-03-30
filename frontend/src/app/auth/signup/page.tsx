@@ -17,8 +17,14 @@ export default function SignupPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    if (form.password !== form.confirm) { setError("Passwords do not match"); return; }
-    if (form.password.length < 6) { setError("Password must be at least 6 characters"); return; }
+    if (form.password !== form.confirm) {
+      setError("Passwords do not match");
+      return;
+    }
+    if (form.password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
     setLoading(true);
     const result = await signup(form.name, form.email, form.password);
     setLoading(false);
@@ -26,11 +32,11 @@ export default function SignupPage() {
     else setError(result.error || "Signup failed");
   };
 
-  const set = (key: string) => (e: React.ChangeEvent<HTMLInputElement>) => setForm({ ...form, [key]: e.target.value });
+  const set = (key: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    setForm({ ...form, [key]: e.target.value });
 
   return (
     <div className="min-h-screen bg-dark-900 flex">
-      {/* Left branding panel */}
       <div className="hidden lg:flex flex-1 relative overflow-hidden">
         <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1200&q=80')" }} />
         <div className="absolute inset-0 bg-dark-900/75" />
@@ -39,7 +45,7 @@ export default function SignupPage() {
             <div className="w-8 h-8 bg-brand-500 flex items-center justify-center">
               <Zap className="w-5 h-5 text-white" fill="currentColor" />
             </div>
-            <span className="text-2xl tracking-[0.15em] text-white" style={{ fontFamily: "var(--font-display)" }}>PRIDE AUTO</span>
+            <span className="text-2xl tracking-[0.15em] text-white" style={{ fontFamily: "var(--font-display)" }}>PRIDE AUTO STORE</span>
           </Link>
           <div>
             <h2 className="font-display text-6xl text-white tracking-wider leading-none mb-4" style={{ fontFamily: "var(--font-display)" }}>
@@ -47,16 +53,15 @@ export default function SignupPage() {
             </h2>
             <p className="text-white/40 text-lg max-w-sm">Get access to exclusive deals, order tracking, and a curated list of parts for your vehicle.</p>
           </div>
-          <p className="text-white/20 text-sm">Â© {new Date().getFullYear()} Pride Auto Store</p>
+          <p className="text-white/20 text-sm">© {new Date().getFullYear()} Pride Auto Store</p>
         </div>
       </div>
 
-      {/* Form panel */}
       <div className="flex-1 flex items-center justify-center px-4 sm:px-8 lg:px-16 py-20">
         <div className="w-full max-w-md">
           <Link href="/" className="flex items-center gap-2 mb-10 lg:hidden">
             <div className="w-8 h-8 bg-brand-500 flex items-center justify-center"><Zap className="w-5 h-5 text-white" fill="currentColor" /></div>
-            <span className="text-2xl tracking-[0.15em] text-white" style={{ fontFamily: "var(--font-display)" }}>PRIDE AUTO</span>
+            <span className="text-2xl tracking-[0.15em] text-white" style={{ fontFamily: "var(--font-display)" }}>PRIDE AUTO STORE</span>
           </Link>
 
           <p className="section-label mb-3">Get started</p>
@@ -77,8 +82,14 @@ export default function SignupPage() {
                 <label className="text-white/40 text-xs tracking-widest uppercase block mb-2">{label}</label>
                 <div className="relative">
                   <Icon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
-                  <input type={type} required value={form[key as keyof typeof form]} onChange={set(key)} placeholder={placeholder}
-                    className="w-full bg-dark-700 border border-white/10 pl-12 pr-4 py-3 text-white placeholder-white/20 text-sm focus:outline-none focus:border-brand-500 transition-colors" />
+                  <input
+                    type={type}
+                    required
+                    value={form[key as keyof typeof form]}
+                    onChange={set(key)}
+                    placeholder={placeholder}
+                    className="w-full bg-dark-700 border border-white/10 pl-12 pr-4 py-3 text-white placeholder-white/20 text-sm focus:outline-none focus:border-brand-500 transition-colors"
+                  />
                 </div>
               </div>
             ))}
@@ -87,8 +98,14 @@ export default function SignupPage() {
               <label className="text-white/40 text-xs tracking-widest uppercase block mb-2">Password</label>
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
-                <input type={showPass ? "text" : "password"} required value={form.password} onChange={set("password")} placeholder="Min. 6 characters"
-                  className="w-full bg-dark-700 border border-white/10 pl-12 pr-12 py-3 text-white placeholder-white/20 text-sm focus:outline-none focus:border-brand-500 transition-colors" />
+                <input
+                  type={showPass ? "text" : "password"}
+                  required
+                  value={form.password}
+                  onChange={set("password")}
+                  placeholder="Min. 6 characters"
+                  className="w-full bg-dark-700 border border-white/10 pl-12 pr-12 py-3 text-white placeholder-white/20 text-sm focus:outline-none focus:border-brand-500 transition-colors"
+                />
                 <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white transition-colors">
                   {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -99,8 +116,14 @@ export default function SignupPage() {
               <label className="text-white/40 text-xs tracking-widest uppercase block mb-2">Confirm Password</label>
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
-                <input type={showPass ? "text" : "password"} required value={form.confirm} onChange={set("confirm")} placeholder="Repeat password"
-                  className="w-full bg-dark-700 border border-white/10 pl-12 pr-4 py-3 text-white placeholder-white/20 text-sm focus:outline-none focus:border-brand-500 transition-colors" />
+                <input
+                  type={showPass ? "text" : "password"}
+                  required
+                  value={form.confirm}
+                  onChange={set("confirm")}
+                  placeholder="Repeat password"
+                  className="w-full bg-dark-700 border border-white/10 pl-12 pr-4 py-3 text-white placeholder-white/20 text-sm focus:outline-none focus:border-brand-500 transition-colors"
+                />
               </div>
             </div>
 

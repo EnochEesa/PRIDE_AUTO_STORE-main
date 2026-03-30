@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X, ShoppingCart, Search, Zap } from "lucide-react";
+import { Menu, X, Search, Zap } from "lucide-react";
 
 const NAV_LINKS = [
   { label: "Home", href: "/" },
@@ -31,7 +31,6 @@ export default function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
-          {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
             <div className="w-8 h-8 bg-brand-500 flex items-center justify-center">
               <Zap className="w-5 h-5 text-white" fill="currentColor" />
@@ -40,11 +39,10 @@ export default function Navbar() {
               className="text-2xl tracking-[0.15em] text-white group-hover:text-brand-400 transition-colors"
               style={{ fontFamily: "var(--font-display)" }}
             >
-              PRIDE AUTO
+              PRIDE AUTO STORE
             </span>
           </Link>
 
-          {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-8">
             {NAV_LINKS.map((link) => (
               <Link
@@ -58,20 +56,15 @@ export default function Navbar() {
             ))}
           </nav>
 
-          {/* Actions */}
           <div className="hidden md:flex items-center gap-4">
             <button className="text-white/60 hover:text-white transition-colors p-2">
               <Search className="w-5 h-5" />
             </button>
-            <Link
-              href="/products"
-              className="btn-primary text-xs"
-            >
+            <Link href="/products" className="btn-primary text-xs">
               Shop Now
             </Link>
           </div>
 
-          {/* Mobile toggle */}
           <button
             className="md:hidden text-white p-2"
             onClick={() => setMobileOpen(!mobileOpen)}
@@ -82,7 +75,6 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Menu */}
       <div
         className={`md:hidden bg-dark-900 border-t border-white/5 transition-all duration-300 overflow-hidden ${
           mobileOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
