@@ -12,31 +12,35 @@ jobs:
       contents: read
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Normalize image repository
-        run: echo "IMAGE_REPO=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
+        id: image-repo
+        shell: bash
+        run: |
+          IMAGE_REPO="ghcr.io/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')"
+          echo "image_repo=$IMAGE_REPO" >> "$GITHUB_OUTPUT"
 
       - name: Log in to GHCR
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push frontend
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: ./frontend
           push: true
-          tags: ${{ env.IMAGE_REPO }}/frontend:${{ github.sha }}
+          tags: ${{ steps.image-repo.outputs.image_repo }}/frontend:${{ github.sha }}
 
       - name: Build and push backend
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: ./backend
           push: true
-          tags: ${{ env.IMAGE_REPO }}/backend:${{ github.sha }}
+          tags: ${{ steps.image-repo.outputs.image_repo }}/backend:${{ github.sha }}
 
   deploy-frontend:
     needs: build-and-push
