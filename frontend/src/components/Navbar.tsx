@@ -64,7 +64,7 @@ export default function Navbar() {
                 className="text-2xl tracking-[0.15em] text-white group-hover:text-brand-400 transition-colors"
                 style={{ fontFamily: "var(--font-display)" }}
               >
-                PRIDE AUTO
+                PRIDE AUTO STORE
               </span>
             </Link>
 
