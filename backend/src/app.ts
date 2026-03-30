@@ -11,6 +11,7 @@ import healthRouter    from './routes/health';
 import { env } from './config/env';
 
 const app = express();
+app.disable('x-powered-by');
 
 // ── Trust proxy (needed for rate limiter on Render/Railway) ──────────────────
 app.set('trust proxy', 1);

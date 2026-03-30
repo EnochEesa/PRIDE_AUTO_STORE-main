@@ -1,21 +1,37 @@
 import { Request, Response } from 'express';
 import Product from '../models/Product';
 import { logger } from '../config/logger';
+import {
+  getBody,
+  getBooleanQuery,
+  getOptionalBodyString,
+  getPositiveIntQuery,
+  getQuery,
+  getQueryString,
+} from '../utils/validate';
 
 // GET /api/products
 export const getProducts = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { category, inStock, featured, search, page = '1', limit = '20' } = req.query;
+    const query = getQuery(req.query);
+    if (!query) {
+      res.status(400).json({ success: false, error: 'Invalid query string.' });
+      return;
+    }
+
+    const category = getQueryString(query.category);
+    const inStock = getBooleanQuery(query.inStock);
+    const featured = getBooleanQuery(query.featured);
+    const search = getQueryString(query.search);
+    const pageNum = getPositiveIntQuery(query.page, 1, Number.MAX_SAFE_INTEGER);
+    const limitNum = getPositiveIntQuery(query.limit, 20, 100);
 
     const filter: Record<string, unknown> = {};
-    if (category)          filter.category = category;
-    if (inStock !== undefined) filter.inStock = inStock === 'true';
-    if (featured !== undefined) filter.featured = featured === 'true';
-    if (search) filter.$text = { $search: search as string };
-
-    const pageNum  = Math.max(parseInt(page as string, 10), 1);
-    const limitNum = Math.min(parseInt(limit as string, 10), 100);
-    const skip     = (pageNum - 1) * limitNum;
+    if (category) filter.category = category;
+    if (typeof inStock === 'boolean') filter.inStock = inStock;
+    if (typeof featured === 'boolean') filter.featured = featured;
+    if (search) filter.$text = { $search: search };
+    const skip = (pageNum - 1) * limitNum;
 
     const [products, total] = await Promise.all([
       Product.find(filter).sort({ featured: -1, createdAt: -1 }).skip(skip).limit(limitNum),
@@ -51,7 +67,24 @@ export const getProduct = async (req: Request, res: Response): Promise<void> => 
 // POST /api/products  (admin only)
 export const createProduct = async (req: Request, res: Response): Promise<void> => {
   try {
-    const product = await Product.create(req.body);
+    const body = getBody(req.body);
+    if (!body) {
+      res.status(400).json({ success: false, error: 'Invalid request body.' });
+      return;
+    }
+
+    const product = await Product.create({
+      name: getOptionalBodyString(body, 'name'),
+      slug: getOptionalBodyString(body, 'slug'),
+      description: getOptionalBodyString(body, 'description'),
+      category: getOptionalBodyString(body, 'category'),
+      brand: getOptionalBodyString(body, 'brand'),
+      price: typeof body.price === 'number' ? body.price : undefined,
+      sku: getOptionalBodyString(body, 'sku'),
+      images: Array.isArray(body.images) ? body.images : undefined,
+      inStock: typeof body.inStock === 'boolean' ? body.inStock : undefined,
+      featured: typeof body.featured === 'boolean' ? body.featured : undefined,
+    });
     res.status(201).json({ success: true, data: product });
   } catch (error: unknown) {
     if (error instanceof Error && error.message.includes('duplicate key')) {
@@ -66,7 +99,24 @@ export const createProduct = async (req: Request, res: Response): Promise<void> 
 // PUT /api/products/:id  (admin only)
 export const updateProduct = async (req: Request, res: Response): Promise<void> => {
   try {
-    const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
+    const body = getBody(req.body);
+    if (!body) {
+      res.status(400).json({ success: false, error: 'Invalid request body.' });
+      return;
+    }
+
+    const product = await Product.findByIdAndUpdate(req.params.id, {
+      name: getOptionalBodyString(body, 'name'),
+      slug: getOptionalBodyString(body, 'slug'),
+      description: getOptionalBodyString(body, 'description'),
+      category: getOptionalBodyString(body, 'category'),
+      brand: getOptionalBodyString(body, 'brand'),
+      price: typeof body.price === 'number' ? body.price : undefined,
+      sku: getOptionalBodyString(body, 'sku'),
+      images: Array.isArray(body.images) ? body.images : undefined,
+      inStock: typeof body.inStock === 'boolean' ? body.inStock : undefined,
+      featured: typeof body.featured === 'boolean' ? body.featured : undefined,
+    }, {
       new: true, runValidators: true,
     });
     if (!product) {

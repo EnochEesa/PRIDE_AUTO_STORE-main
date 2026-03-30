@@ -1,14 +1,22 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
+import type { SignOptions } from 'jsonwebtoken';
 import Admin from '../models/Admin';
 import { env } from '../config/env';
 import { logger } from '../config/logger';
+import { getBody, getRequiredBodyString } from '../utils/validate';
 
 // POST /api/admin/login
 export const login = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { email, password } = req.body;
+    const body = getBody(req.body);
+    if (!body) {
+      res.status(400).json({ success: false, error: 'Invalid request body.' });
+      return;
+    }
 
+    const email = getRequiredBodyString(body, 'email');
+    const password = getRequiredBodyString(body, 'password');
     if (!email || !password) {
       res.status(400).json({ success: false, error: 'Email and password required.' });
       return;
@@ -20,9 +28,10 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const token = jwt.sign({ id: admin._id }, env.JWT_SECRET, {
-      expiresIn: env.JWT_EXPIRES_IN,
-    });
+    const signOptions: SignOptions = {
+      expiresIn: env.JWT_EXPIRES_IN as SignOptions['expiresIn'],
+    };
+    const token = jwt.sign({ id: admin._id }, env.JWT_SECRET, signOptions);
 
     res.json({
       success: true,
@@ -43,16 +52,25 @@ export const seedAdmin = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const existing = await Admin.findOne({ email: 'admin@prideautostore.in' });
+    if (!env.ADMIN_SEED_PASSWORD) {
+      res.status(400).json({
+        success: false,
+        error: 'Set ADMIN_SEED_PASSWORD before using the seed route.',
+      });
+      return;
+    }
+
+    const seedEmail = env.ADMIN_EMAIL || env.ADMIN_SEED_EMAIL;
+    const existing = await Admin.findOne({ email: seedEmail });
     if (existing) {
       res.json({ success: true, message: 'Admin already exists.' });
       return;
     }
 
     await Admin.create({
-      email: 'admin@prideautostore.in',
-      password: 'PrideAdmin@2024',
-      name: 'Pride Admin',
+      email: seedEmail,
+      password: env.ADMIN_SEED_PASSWORD,
+      name: env.ADMIN_NAME,
     });
 
     res.status(201).json({ success: true, message: 'Admin created. Change password immediately!' });

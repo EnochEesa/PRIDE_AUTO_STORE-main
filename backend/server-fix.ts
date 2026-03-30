@@ -8,6 +8,7 @@ import express from "express";
 import cors from "cors";
 
 const app = express();
+app.disable("x-powered-by");
 const PORT = process.env.PORT || 5000;
 
 // ── Middleware ───────────────────────────────────────────────────────────────

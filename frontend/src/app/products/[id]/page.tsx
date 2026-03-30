@@ -1,8 +1,20 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ShoppingCart, ArrowLeft, Star, Shield, Truck, RotateCcw, Plus, Minus, Check, Share2, Heart } from "lucide-react";
+import {
+  ArrowLeft,
+  Check,
+  Heart,
+  Minus,
+  Plus,
+  RotateCcw,
+  Share2,
+  Shield,
+  ShoppingCart,
+  Star,
+  Truck,
+} from "lucide-react";
 import { useCart } from "@/context/CartContext";
 
 interface Product {
@@ -17,12 +29,65 @@ interface Product {
   sku?: string;
 }
 
+interface ProductApiResponse {
+  data?: unknown;
+}
+
 const FALLBACKS = [
   "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80",
   "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=600&q=80",
   "https://images.unsplash.com/photo-1517524285303-d6fc683dddf8?w=600&q=80",
   "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=600&q=80",
 ];
+
+const priceFormatter = new Intl.NumberFormat("en-IN");
+
+const sanitizeText = (value: unknown): string | undefined => {
+  if (typeof value !== "string") return undefined;
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : undefined;
+};
+
+const sanitizeNumber = (value: unknown): number | undefined =>
+  typeof value === "number" && Number.isFinite(value) ? value : undefined;
+
+const normalizeProduct = (value: unknown): Product | null => {
+  if (!value || typeof value !== "object") return null;
+
+  const record = value as Record<string, unknown>;
+  const id = sanitizeText(record._id);
+  const name = sanitizeText(record.name);
+  const price = sanitizeNumber(record.price);
+  if (!id || !name || price === undefined) return null;
+
+  return {
+    _id: id,
+    name,
+    price,
+    category: sanitizeText(record.category),
+    image: sanitizeText(record.image),
+    stock: sanitizeNumber(record.stock),
+    description: sanitizeText(record.description),
+    brand: sanitizeText(record.brand),
+    sku: sanitizeText(record.sku),
+  };
+};
+
+const getFallbackImage = (seed: string): string =>
+  FALLBACKS[Math.abs(Number.parseInt(seed, 10) || 0) % FALLBACKS.length];
+
+const getSafeImageUrl = (value?: string) => {
+  if (!value) return null;
+
+  try {
+    if (value.startsWith("/")) return value;
+
+    const parsed = new URL(value);
+    return parsed.protocol === "http:" || parsed.protocol === "https:" ? parsed.toString() : null;
+  } catch {
+    return null;
+  }
+};
 
 export default function ProductDetailPage({ params }: { params: { id: string } }) {
   const [product, setProduct] = useState<Product | null>(null);
@@ -36,44 +101,71 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const res = await fetch(`/api/products/${params.id}`);
+        const res = await fetch(`/api/products/${encodeURIComponent(params.id)}`);
         if (!res.ok) throw new Error("Not found");
-        const data = await res.json();
-        setProduct(data);
+
+        const data: ProductApiResponse = await res.json();
+        const normalized = normalizeProduct(data.data);
+        if (!normalized) throw new Error("Invalid product response");
+        setProduct(normalized);
       } catch {
-        // Demo fallback
         setProduct({
           _id: params.id,
           name: "High-Performance Piston Kit",
           price: 3499,
           category: "Engine Parts",
-          description: "OEM-quality piston kit compatible with a wide range of vehicles. Features a precision-engineered design for optimal performance and longevity. Comes with piston rings, pin, and clips. 12-month warranty included.",
+          description:
+            "OEM-quality piston kit compatible with a wide range of vehicles. Features a precision-engineered design for optimal performance and longevity. Comes with piston rings, pin, and clips. 12-month warranty included.",
           stock: 12,
           brand: "AutoPrime",
           sku: `SKU-${params.id.toUpperCase()}`,
-          image: FALLBACKS[parseInt(params.id) % FALLBACKS.length],
+          image: getFallbackImage(params.id),
         });
       } finally {
         setLoading(false);
       }
     };
+
     fetchProduct();
   }, [params.id]);
 
+  const imageUrl = product && !imgError
+    ? (getSafeImageUrl(product.image) ?? getFallbackImage(product._id))
+    : getFallbackImage(product?._id ?? params.id);
+  const isOutOfStock = product?.stock === 0;
+
   const handleAddToCart = () => {
     if (!product) return;
-    for (let i = 0; i < qty; i++) {
-      addItem({ _id: product._id, name: product.name, price: product.price, image: imageUrl, category: product.category });
+
+    for (let i = 0; i < qty; i += 1) {
+      addItem({
+        _id: product._id,
+        name: product.name,
+        price: product.price,
+        image: imageUrl,
+        category: product.category,
+      });
     }
+
     setAdded(true);
     setTimeout(() => setAdded(false), 2500);
+  };
+
+  const handleShare = async () => {
+    if (!product || typeof navigator === "undefined" || !navigator.share || typeof window === "undefined") return;
+
+    try {
+      await navigator.share({ title: product.name, url: window.location.href });
+    } catch {
+      // User dismissal is expected for share dialogs.
+    }
   };
 
   if (loading) {
     return (
       <div className="min-h-screen bg-dark-900 pt-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
             <div className="skeleton aspect-square" />
             <div className="space-y-4">
               <div className="skeleton h-4 w-24 rounded" />
@@ -88,86 +180,120 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
     );
   }
 
-  if (!product) return (
-    <div className="min-h-screen bg-dark-900 pt-20 flex items-center justify-center">
-      <div className="text-center">
-        <h2 className="font-display text-4xl text-white mb-4" style={{ fontFamily: "var(--font-display)" }}>PRODUCT NOT FOUND</h2>
-        <Link href="/products" className="btn-primary">Browse Products</Link>
+  if (!product) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-dark-900 pt-20">
+        <div className="text-center">
+          <h2 className="mb-4 font-display text-4xl text-white">PRODUCT NOT FOUND</h2>
+          <Link href="/products" className="btn-primary">
+            Browse Products
+          </Link>
+        </div>
       </div>
-    </div>
-  );
-
-  const imageUrl = imgError || !product.image ? (FALLBACKS[parseInt(product._id) % FALLBACKS.length]) : product.image;
-  const isOutOfStock = product.stock === 0;
+    );
+  }
 
   return (
     <div className="min-h-screen bg-dark-900 pt-20">
-      {/* Breadcrumb */}
-      <div className="bg-dark-800 border-b border-white/5">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div className="border-b border-white/5 bg-dark-800">
+        <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-2 text-xs text-white/30">
-            <Link href="/" className="hover:text-white transition-colors">Home</Link>
+            <Link href="/" className="transition-colors hover:text-white">
+              Home
+            </Link>
             <span>/</span>
-            <Link href="/products" className="hover:text-white transition-colors">Products</Link>
-            {product.category && <><span>/</span><Link href={`/products?category=${product.category}`} className="hover:text-white transition-colors">{product.category}</Link></>}
+            <Link href="/products" className="transition-colors hover:text-white">
+              Products
+            </Link>
+            {product.category && (
+              <>
+                <span>/</span>
+                <Link
+                  href={`/products?category=${encodeURIComponent(product.category)}`}
+                  className="transition-colors hover:text-white"
+                >
+                  {product.category}
+                </Link>
+              </>
+            )}
             <span>/</span>
-            <span className="text-white/60 truncate max-w-xs">{product.name}</span>
+            <span className="max-w-xs truncate text-white/60">{product.name}</span>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <Link href="/products" className="flex items-center gap-2 text-white/40 hover:text-white text-sm mb-8 transition-colors w-fit">
-          <ArrowLeft className="w-4 h-4" /> Back to Products
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <Link
+          href="/products"
+          className="mb-8 flex w-fit items-center gap-2 text-sm text-white/40 transition-colors hover:text-white"
+        >
+          <ArrowLeft className="h-4 w-4" /> Back to Products
         </Link>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
-          {/* Image */}
+        <div className="mb-16 grid grid-cols-1 gap-12 lg:grid-cols-2">
           <div>
-            <div className="relative bg-dark-800 border border-white/5 overflow-hidden aspect-square">
-              <img src={imageUrl} alt={product.name} className="w-full h-full object-cover" onError={() => setImgError(true)} />
+            <div className="relative aspect-square overflow-hidden border border-white/5 bg-dark-800">
+              <img
+                src={imageUrl}
+                alt={product.name}
+                className="h-full w-full object-cover"
+                onError={() => setImgError(true)}
+              />
               {product.category && (
-                <div className="absolute top-4 left-4">
-                  <span className="bg-dark-900/80 backdrop-blur-sm text-white/60 text-xs font-semibold tracking-widest uppercase px-3 py-1.5">{product.category}</span>
+                <div className="absolute left-4 top-4">
+                  <span className="bg-dark-900/80 px-3 py-1.5 text-xs font-semibold uppercase tracking-widest text-white/60 backdrop-blur-sm">
+                    {product.category}
+                  </span>
                 </div>
               )}
-              <button onClick={() => setWishlisted(!wishlisted)} className={`absolute top-4 right-4 w-10 h-10 flex items-center justify-center border transition-all duration-200 ${wishlisted ? "bg-red-500/20 border-red-500/40 text-red-400" : "bg-dark-900/60 border-white/20 text-white/50 hover:text-white"}`}>
-                <Heart className="w-5 h-5" fill={wishlisted ? "currentColor" : "none"} />
+              <button
+                type="button"
+                onClick={() => setWishlisted(!wishlisted)}
+                aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
+                title={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
+                className={`absolute right-4 top-4 flex h-10 w-10 items-center justify-center border transition-all duration-200 ${wishlisted ? "border-red-500/40 bg-red-500/20 text-red-400" : "border-white/20 bg-dark-900/60 text-white/50 hover:text-white"}`}
+              >
+                <Heart className="h-5 w-5" fill={wishlisted ? "currentColor" : "none"} />
               </button>
             </div>
           </div>
 
-          {/* Details */}
           <div>
             {product.brand && <p className="section-label mb-2">{product.brand}</p>}
-            <h1 className="font-display text-4xl md:text-5xl text-white tracking-wider leading-tight mb-4" style={{ fontFamily: "var(--font-display)" }}>
+            <h1 className="mb-4 font-display text-4xl tracking-wider text-white md:text-5xl">
               {product.name.toUpperCase()}
             </h1>
 
-            {/* Rating */}
-            <div className="flex items-center gap-3 mb-4">
+            <div className="mb-4 flex items-center gap-3">
               <div className="flex gap-1">
                 {Array.from({ length: 5 }).map((_, i) => (
-                  <Star key={i} className={`w-4 h-4 ${i < 4 ? "text-brand-400 fill-brand-400" : "text-white/20"}`} />
+                  <Star
+                    key={i}
+                    className={`h-4 w-4 ${i < 4 ? "fill-brand-400 text-brand-400" : "text-white/20"}`}
+                  />
                 ))}
               </div>
-              <span className="text-white/40 text-sm">4.0 (24 reviews)</span>
+              <span className="text-sm text-white/40">4.0 (24 reviews)</span>
             </div>
 
-            {/* Price */}
-            <div className="flex items-baseline gap-3 mb-6">
-              <span className="text-brand-400 font-bold text-4xl">₹{product.price?.toLocaleString("en-IN")}</span>
-              <span className="text-white/30 text-sm">incl. GST</span>
+            <div className="mb-6 flex items-baseline gap-3">
+              <span className="text-4xl font-bold text-brand-400">
+                Rs. {priceFormatter.format(product.price)}
+              </span>
+              <span className="text-sm text-white/30">incl. GST</span>
             </div>
 
-            {/* Description */}
             {product.description && (
-              <p className="text-white/50 leading-relaxed mb-6 text-sm">{product.description}</p>
+              <p className="mb-6 text-sm leading-relaxed text-white/50">{product.description}</p>
             )}
 
-            {/* SKU / Stock */}
-            <div className="flex gap-6 mb-6 text-sm">
-              {product.sku && <div><span className="text-white/30">SKU: </span><span className="text-white/60">{product.sku}</span></div>}
+            <div className="mb-6 flex gap-6 text-sm">
+              {product.sku && (
+                <div>
+                  <span className="text-white/30">SKU: </span>
+                  <span className="text-white/60">{product.sku}</span>
+                </div>
+              )}
               <div>
                 <span className="text-white/30">Stock: </span>
                 <span className={isOutOfStock ? "text-red-400" : product.stock && product.stock < 5 ? "text-amber-400" : "text-green-400"}>
@@ -176,67 +302,105 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
               </div>
             </div>
 
-            {/* Qty + Add to Cart */}
             {!isOutOfStock && (
-              <div className="flex items-center gap-4 mb-6">
+              <div className="mb-6 flex items-center gap-4">
                 <div className="flex items-center border border-white/10">
-                  <button onClick={() => setQty(Math.max(1, qty - 1))} className="w-10 h-12 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/5 transition-colors">
-                    <Minus className="w-4 h-4" />
+                  <button
+                    type="button"
+                    onClick={() => setQty(Math.max(1, qty - 1))}
+                    aria-label="Decrease quantity"
+                    title="Decrease quantity"
+                    className="flex h-12 w-10 items-center justify-center text-white/60 transition-colors hover:bg-white/5 hover:text-white"
+                  >
+                    <Minus className="h-4 w-4" />
                   </button>
-                  <span className="w-12 text-center text-white font-semibold">{qty}</span>
-                  <button onClick={() => setQty(Math.min(product.stock || 99, qty + 1))} className="w-10 h-12 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/5 transition-colors">
-                    <Plus className="w-4 h-4" />
+                  <span className="w-12 text-center font-semibold text-white">{qty}</span>
+                  <button
+                    type="button"
+                    onClick={() => setQty(Math.min(product.stock || 99, qty + 1))}
+                    aria-label="Increase quantity"
+                    title="Increase quantity"
+                    className="flex h-12 w-10 items-center justify-center text-white/60 transition-colors hover:bg-white/5 hover:text-white"
+                  >
+                    <Plus className="h-4 w-4" />
                   </button>
                 </div>
 
-                <button onClick={handleAddToCart}
-                  className={`flex-1 flex items-center justify-center gap-2 py-3 font-semibold text-sm tracking-wider uppercase transition-all duration-200 ${added ? "bg-green-600 text-white" : "bg-brand-500 hover:bg-brand-600 text-white"}`}>
-                  {added ? <><Check className="w-4 h-4" /> Added to Cart!</> : <><ShoppingCart className="w-4 h-4" /> Add to Cart</>}
+                <button
+                  type="button"
+                  onClick={handleAddToCart}
+                  className={`flex flex-1 items-center justify-center gap-2 py-3 text-sm font-semibold uppercase tracking-wider transition-all duration-200 ${added ? "bg-green-600 text-white" : "bg-brand-500 text-white hover:bg-brand-600"}`}
+                >
+                  {added ? (
+                    <>
+                      <Check className="h-4 w-4" /> Added to Cart!
+                    </>
+                  ) : (
+                    <>
+                      <ShoppingCart className="h-4 w-4" /> Add to Cart
+                    </>
+                  )}
                 </button>
 
-                <button onClick={() => navigator?.share?.({ title: product.name, url: window.location.href }).catch(() => {})} className="w-12 h-12 border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:border-white/30 transition-colors">
-                  <Share2 className="w-4 h-4" />
+                <button
+                  type="button"
+                  onClick={handleShare}
+                  aria-label="Share product"
+                  title="Share product"
+                  className="flex h-12 w-12 items-center justify-center border border-white/10 text-white/50 transition-colors hover:border-white/30 hover:text-white"
+                >
+                  <Share2 className="h-4 w-4" />
                 </button>
               </div>
             )}
 
             {isOutOfStock && (
-              <div className="bg-red-500/10 border border-red-500/20 px-4 py-3 text-red-400 text-sm mb-6">
+              <div className="mb-6 border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400">
                 This product is currently out of stock.
               </div>
             )}
 
-            {/* Guarantees */}
             <div className="grid grid-cols-3 gap-3 border-t border-white/5 pt-6">
               {[
                 { icon: Shield, text: "12-Month Warranty" },
-                { icon: Truck, text: "Free Shipping ₹999+" },
+                { icon: Truck, text: "Free Shipping Rs. 999+" },
                 { icon: RotateCcw, text: "7-Day Returns" },
               ].map(({ icon: Icon, text }) => (
                 <div key={text} className="flex flex-col items-center gap-2 text-center">
-                  <Icon className="w-5 h-5 text-brand-500" />
-                  <span className="text-white/40 text-xs">{text}</span>
+                  <Icon className="h-5 w-5 text-brand-500" />
+                  <span className="text-xs text-white/40">{text}</span>
                 </div>
               ))}
             </div>
           </div>
         </div>
 
-        {/* Related / You may also like */}
         <div className="border-t border-white/5 pt-12">
-          <h2 className="font-display text-3xl text-white tracking-wider mb-2" style={{ fontFamily: "var(--font-display)" }}>
+          <h2 className="mb-2 font-display text-3xl tracking-wider text-white">
             YOU MAY ALSO LIKE
           </h2>
-          <p className="text-white/40 text-sm mb-8">More parts from the same category</p>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <p className="mb-8 text-sm text-white/40">More parts from the same category</p>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             {[1, 2, 3, 4].map((i) => (
-              <Link key={i} href={`/products/${i}`} className="group bg-dark-800 border border-white/5 hover:border-brand-500/30 transition-all">
+              <Link
+                key={i}
+                href={`/products/${i}`}
+                className="group border border-white/5 bg-dark-800 transition-all hover:border-brand-500/30"
+              >
                 <div className="aspect-square overflow-hidden bg-dark-700">
-                  <img src={FALLBACKS[i % FALLBACKS.length]} alt="Related product" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <img
+                    src={FALLBACKS[i % FALLBACKS.length]}
+                    alt={`Related product ${i}`}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
                 </div>
                 <div className="p-3">
-                  <p className="text-white/70 text-xs font-medium line-clamp-2 group-hover:text-white transition-colors">Related Auto Part {i}</p>
-                  <p className="text-brand-400 text-sm font-bold mt-1">₹{(Math.floor(Math.random() * 3000) + 500).toLocaleString("en-IN")}</p>
+                  <p className="line-clamp-2 text-xs font-medium text-white/70 transition-colors group-hover:text-white">
+                    Related Auto Part {i}
+                  </p>
+                  <p className="mt-1 text-sm font-bold text-brand-400">
+                    Rs. {priceFormatter.format(Math.floor(Math.random() * 3000) + 500)}
+                  </p>
                 </div>
               </Link>
             ))}

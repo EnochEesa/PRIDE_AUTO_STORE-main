@@ -17,4 +17,7 @@ export const env = {
   EMAIL_USER:    process.env.EMAIL_USER || '',
   EMAIL_PASS:    process.env.EMAIL_PASS || '',
   ADMIN_EMAIL:   process.env.ADMIN_EMAIL || '',
+  ADMIN_SEED_EMAIL: process.env.ADMIN_SEED_EMAIL || 'admin@prideautostore.in',
+  ADMIN_NAME:    process.env.ADMIN_NAME || 'Pride Admin',
+  ADMIN_SEED_PASSWORD: process.env.ADMIN_SEED_PASSWORD || '',
 };
