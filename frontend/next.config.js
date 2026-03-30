@@ -1,10 +1,13 @@
 /** @type {import('next').NextConfig} */
+const apiBaseUrl = process.env.BACKEND_URL || "http://localhost:5000";
+
 const nextConfig = {
+  output: "standalone",
   async rewrites() {
     return [
       {
         source: "/api/:path*",
-        destination: "http://localhost:5000/api/:path*",
+        destination: `${apiBaseUrl}/api/:path*`,
       },
     ];
   },
