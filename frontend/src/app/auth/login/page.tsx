@@ -3,8 +3,10 @@
 import { Suspense, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Eye, EyeOff, Zap, ArrowRight, Lock, Mail } from "lucide-react";
+import { Eye, EyeOff, ArrowRight, Lock, Mail } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import BrandLogo from "@/components/BrandLogo";
+import { sanitizeEmail, sanitizeSecret } from "@/lib/security";
 
 function LoginContent() {
   const [email, setEmail] = useState("");
@@ -39,13 +41,8 @@ function LoginContent() {
         />
         <div className="absolute inset-0 bg-dark-900/75" />
         <div className="relative flex flex-col justify-between p-12 w-full">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-brand-500 flex items-center justify-center">
-              <Zap className="w-5 h-5 text-white" fill="currentColor" />
-            </div>
-            <span className="text-2xl tracking-[0.15em] text-white" style={{ fontFamily: "var(--font-display)" }}>
-              PRIDE AUTO STORE
-            </span>
+          <Link href="/" className="w-fit">
+            <BrandLogo size="sm" subtitle="Classic Fiat & Premier Spares" />
           </Link>
           <div>
             <h2 className="font-display text-6xl text-white tracking-wider leading-none mb-4" style={{ fontFamily: "var(--font-display)" }}>
@@ -61,11 +58,8 @@ function LoginContent() {
 
       <div className="flex-1 flex items-center justify-center px-4 sm:px-8 lg:px-16 py-20">
         <div className="w-full max-w-md">
-          <Link href="/" className="flex items-center gap-2 mb-10 lg:hidden">
-            <div className="w-8 h-8 bg-brand-500 flex items-center justify-center">
-              <Zap className="w-5 h-5 text-white" fill="currentColor" />
-            </div>
-            <span className="text-2xl tracking-[0.15em] text-white" style={{ fontFamily: "var(--font-display)" }}>PRIDE AUTO STORE</span>
+          <Link href="/" className="mb-10 inline-flex lg:hidden">
+            <BrandLogo size="sm" />
           </Link>
 
           <p className="section-label mb-3">Welcome back</p>
@@ -94,8 +88,10 @@ function LoginContent() {
                   type="email"
                   required
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => setEmail(sanitizeEmail(e.target.value))}
                   placeholder="you@example.com"
+                  autoComplete="email"
+                  maxLength={120}
                   className="w-full bg-dark-700 border border-white/10 pl-12 pr-4 py-3 text-white placeholder-white/20 text-sm focus:outline-none focus:border-brand-500 transition-colors"
                 />
               </div>
@@ -109,8 +105,11 @@ function LoginContent() {
                   type={showPass ? "text" : "password"}
                   required
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => setPassword(sanitizeSecret(e.target.value, 128))}
                   placeholder="********"
+                  autoComplete="current-password"
+                  minLength={6}
+                  maxLength={128}
                   className="w-full bg-dark-700 border border-white/10 pl-12 pr-12 py-3 text-white placeholder-white/20 text-sm focus:outline-none focus:border-brand-500 transition-colors"
                 />
                 <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white transition-colors">
@@ -140,7 +139,8 @@ function LoginContent() {
 
           <div className="mt-6 p-4 bg-dark-800 border border-white/5 text-xs text-white/30">
             <p className="font-semibold text-white/50 mb-1">Demo credentials</p>
-            <p>Any email + password (min 6 chars) works while backend auth is being set up.</p>
+            <p>User access: any valid email + password (min 6 chars).</p>
+            <p className="mt-1">Admin access: <span className="text-white">admin@prideautostore.com</span> + any 6+ character password.</p>
           </div>
         </div>
       </div>

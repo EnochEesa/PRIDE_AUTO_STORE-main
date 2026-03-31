@@ -115,7 +115,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
           price: 3499,
           category: "Engine Parts",
           description:
-            "OEM-quality piston kit compatible with a wide range of vehicles. Features a precision-engineered design for optimal performance and longevity. Comes with piston rings, pin, and clips. 12-month warranty included.",
+            "OEM-quality piston kit compatible with a wide range of vehicles. Features a precision-engineered design for optimal performance and longevity. Comes with piston rings, pin, and clips for a dependable rebuild.",
           stock: 12,
           brand: "AutoPrime",
           sku: `SKU-${params.id.toUpperCase()}`,
@@ -362,8 +362,8 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
 
             <div className="grid grid-cols-3 gap-3 border-t border-white/5 pt-6">
               {[
-                { icon: Shield, text: "12-Month Warranty" },
-                { icon: Truck, text: "Free Shipping Rs. 999+" },
+                { icon: Shield, text: "Quality Checked" },
+                { icon: Truck, text: "Dispatch Support" },
                 { icon: RotateCcw, text: "7-Day Returns" },
               ].map(({ icon: Icon, text }) => (
                 <div key={text} className="flex flex-col items-center gap-2 text-center">

@@ -1,0 +1,19 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="brandLogoGradient" x1="8" y1="10" x2="56" y2="54" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FB923C" />
+      <stop offset="1" stop-color="#EA580C" />
+    </linearGradient>
+  </defs>
+  <path d="M8 12H47L56 21V52H17L8 43V12Z" fill="url(#brandLogoGradient)" />
+  <path
+    d="M22 17V47M22 17H35.5C42.5 17 48 22.2 48 28.8C48 35.6 42.5 40.8 35.5 40.8H22"
+    stroke="white"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    stroke-width="6.5"
+  />
+  <path d="M13 24H21" stroke="white" stroke-linecap="round" stroke-opacity="0.65" stroke-width="2.4" />
+  <path d="M13 31H19" stroke="white" stroke-linecap="round" stroke-opacity="0.52" stroke-width="2.4" />
+  <path d="M13 38H17" stroke="white" stroke-linecap="round" stroke-opacity="0.38" stroke-width="2.4" />
+</svg>

@@ -253,7 +253,7 @@ export default function CartPage() {
                 </div>
                 {shipping === 0 && (
                   <p className="text-xs text-green-400/70">
-                    Free shipping on orders above Rs. 999
+                    Complimentary shipping is applied automatically when eligible.
                   </p>
                 )}
               </div>

@@ -3,9 +3,10 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Menu, X, ShoppingCart, Search, Zap, LogOut, ChevronDown } from "lucide-react";
+import { Menu, X, ShoppingCart, Search, LogOut, ChevronDown } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
+import BrandLogo from "@/components/BrandLogo";
 
 const NAV_LINKS = [
   { label: "Home", href: "/" },
@@ -57,15 +58,11 @@ export default function Navbar() {
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2 group flex-shrink-0">
-              <div className="w-8 h-8 bg-brand-500 flex items-center justify-center">
-                <Zap className="w-5 h-5 text-white" fill="currentColor" />
-              </div>
-              <span
-                className="text-2xl tracking-[0.15em] text-white group-hover:text-brand-400 transition-colors"
-                style={{ fontFamily: "var(--font-display)" }}
-              >
-                PRIDE AUTO STORE
-              </span>
+              <BrandLogo
+                size="sm"
+                className="transition-transform duration-200 group-hover:translate-x-0.5"
+                iconClassName="drop-shadow-[0_8px_18px_rgba(249,115,22,0.2)]"
+              />
             </Link>
 
             {/* Desktop Nav */}
@@ -87,11 +84,18 @@ export default function Navbar() {
               <button
                 onClick={() => setSearchOpen(!searchOpen)}
                 className="text-white/60 hover:text-white transition-colors p-2"
+                aria-label={searchOpen ? "Close search" : "Open search"}
+                title={searchOpen ? "Close search" : "Open search"}
               >
                 <Search className="w-5 h-5" />
               </button>
 
-              <Link href="/cart" className="relative text-white/60 hover:text-white transition-colors p-2">
+              <Link
+                href="/cart"
+                className="relative text-white/60 hover:text-white transition-colors p-2"
+                aria-label="Open cart"
+                title="Open cart"
+              >
                 <ShoppingCart className="w-5 h-5" />
                 {cart.count > 0 && (
                   <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-brand-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full">
@@ -118,6 +122,11 @@ export default function Navbar() {
                         <p className="text-white text-sm font-semibold truncate">{user.name}</p>
                         <p className="text-white/40 text-xs truncate">{user.email}</p>
                       </div>
+                      {user.role === "admin" && (
+                        <Link href="/admin" className="flex items-center gap-2 px-4 py-2.5 text-sm text-brand-300 hover:text-white hover:bg-white/5 transition-colors" onClick={() => setUserMenuOpen(false)}>
+                          Admin Dashboard
+                        </Link>
+                      )}
                       <Link href="/orders" className="flex items-center gap-2 px-4 py-2.5 text-sm text-white/70 hover:text-white hover:bg-white/5 transition-colors" onClick={() => setUserMenuOpen(false)}>
                         My Orders
                       </Link>
@@ -137,7 +146,7 @@ export default function Navbar() {
 
             {/* Mobile icons */}
             <div className="md:hidden flex items-center gap-2">
-              <Link href="/cart" className="relative text-white p-2">
+              <Link href="/cart" className="relative text-white p-2" aria-label="Open cart" title="Open cart">
                 <ShoppingCart className="w-5 h-5" />
                 {cart.count > 0 && (
                   <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-brand-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full">
@@ -145,7 +154,12 @@ export default function Navbar() {
                   </span>
                 )}
               </Link>
-              <button className="text-white p-2" onClick={() => setMobileOpen(!mobileOpen)}>
+              <button
+                className="text-white p-2"
+                onClick={() => setMobileOpen(!mobileOpen)}
+                aria-label={mobileOpen ? "Close menu" : "Open menu"}
+                title={mobileOpen ? "Close menu" : "Open menu"}
+              >
                 {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
             </div>
@@ -203,6 +217,11 @@ export default function Navbar() {
                   <Link href="/orders" className="block py-3 border-b border-white/5 text-white/70 text-sm font-medium transition-colors hover:text-white" onClick={() => setMobileOpen(false)}>
                     My Orders
                   </Link>
+                  {user.role === "admin" && (
+                    <Link href="/admin" className="block py-3 border-b border-white/5 text-brand-300 text-sm font-medium transition-colors hover:text-white" onClick={() => setMobileOpen(false)}>
+                      Admin Dashboard
+                    </Link>
+                  )}
                   <button onClick={() => { logout(); setMobileOpen(false); }} className="w-full flex items-center justify-center gap-2 py-2 border border-red-500/30 text-red-400 text-sm">
                     <LogOut className="w-4 h-4" /> Sign Out
                   </button>

@@ -24,7 +24,7 @@ async function getFeaturedProducts(): Promise<Product[]> {
   } catch {
     // Return demo data if API not available
     return [
-      { _id: "1", name: "High-Performance Piston Kit", price: 3499, category: "Engine Parts", description: "OEM-quality with 12-month warranty.", stock: 15 },
+      { _id: "1", name: "High-Performance Piston Kit", price: 3499, category: "Engine Parts", description: "OEM-quality fit and finish for reliable rebuilds.", stock: 15 },
       { _id: "2", name: "Ceramic Brake Pads Set", price: 1299, category: "Brake System", description: "Low-dust ceramic compound for smooth braking.", stock: 8 },
       { _id: "3", name: "Premium Oil Filter", price: 349, category: "Filters", description: "High-flow synthetic media filter.", stock: 42 },
       { _id: "4", name: "Alternator Assembly", price: 5999, category: "Electrical", description: "100% remanufactured with new brushes.", stock: 3 },

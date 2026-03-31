@@ -3,8 +3,10 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff, Zap, ArrowRight, Lock, Mail, User } from "lucide-react";
+import { Eye, EyeOff, ArrowRight, Lock, Mail, User } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import BrandLogo from "@/components/BrandLogo";
+import { sanitizeEmail, sanitizeName, sanitizeSecret } from "@/lib/security";
 
 export default function SignupPage() {
   const [form, setForm] = useState({ name: "", email: "", password: "", confirm: "" });
@@ -33,7 +35,15 @@ export default function SignupPage() {
   };
 
   const set = (key: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
-    setForm({ ...form, [key]: e.target.value });
+    setForm({
+      ...form,
+      [key]:
+        key === "name"
+          ? sanitizeName(e.target.value)
+          : key === "email"
+            ? sanitizeEmail(e.target.value)
+            : sanitizeSecret(e.target.value, 128),
+    });
 
   return (
     <div className="min-h-screen bg-dark-900 flex">
@@ -41,12 +51,7 @@ export default function SignupPage() {
         <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1200&q=80')" }} />
         <div className="absolute inset-0 bg-dark-900/75" />
         <div className="relative flex flex-col justify-between p-12 w-full">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-brand-500 flex items-center justify-center">
-              <Zap className="w-5 h-5 text-white" fill="currentColor" />
-            </div>
-            <span className="text-2xl tracking-[0.15em] text-white" style={{ fontFamily: "var(--font-display)" }}>PRIDE AUTO STORE</span>
-          </Link>
+          <Link href="/" className="w-fit"><BrandLogo size="sm" subtitle="Classic Fiat & Premier Spares" /></Link>
           <div>
             <h2 className="font-display text-6xl text-white tracking-wider leading-none mb-4" style={{ fontFamily: "var(--font-display)" }}>
               JOIN THE<br />COMMUNITY
@@ -59,10 +64,7 @@ export default function SignupPage() {
 
       <div className="flex-1 flex items-center justify-center px-4 sm:px-8 lg:px-16 py-20">
         <div className="w-full max-w-md">
-          <Link href="/" className="flex items-center gap-2 mb-10 lg:hidden">
-            <div className="w-8 h-8 bg-brand-500 flex items-center justify-center"><Zap className="w-5 h-5 text-white" fill="currentColor" /></div>
-            <span className="text-2xl tracking-[0.15em] text-white" style={{ fontFamily: "var(--font-display)" }}>PRIDE AUTO STORE</span>
-          </Link>
+          <Link href="/" className="mb-10 inline-flex lg:hidden"><BrandLogo size="sm" /></Link>
 
           <p className="section-label mb-3">Get started</p>
           <h1 className="font-display text-4xl text-white tracking-wider mb-2" style={{ fontFamily: "var(--font-display)" }}>CREATE ACCOUNT</h1>
@@ -88,6 +90,8 @@ export default function SignupPage() {
                     value={form[key as keyof typeof form]}
                     onChange={set(key)}
                     placeholder={placeholder}
+                    autoComplete={key === "name" ? "name" : "email"}
+                    maxLength={key === "name" ? 60 : 120}
                     className="w-full bg-dark-700 border border-white/10 pl-12 pr-4 py-3 text-white placeholder-white/20 text-sm focus:outline-none focus:border-brand-500 transition-colors"
                   />
                 </div>
@@ -104,6 +108,9 @@ export default function SignupPage() {
                   value={form.password}
                   onChange={set("password")}
                   placeholder="Min. 6 characters"
+                  autoComplete="new-password"
+                  minLength={6}
+                  maxLength={128}
                   className="w-full bg-dark-700 border border-white/10 pl-12 pr-12 py-3 text-white placeholder-white/20 text-sm focus:outline-none focus:border-brand-500 transition-colors"
                 />
                 <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white transition-colors">
@@ -122,6 +129,9 @@ export default function SignupPage() {
                   value={form.confirm}
                   onChange={set("confirm")}
                   placeholder="Repeat password"
+                  autoComplete="new-password"
+                  minLength={6}
+                  maxLength={128}
                   className="w-full bg-dark-700 border border-white/10 pl-12 pr-4 py-3 text-white placeholder-white/20 text-sm focus:outline-none focus:border-brand-500 transition-colors"
                 />
               </div>

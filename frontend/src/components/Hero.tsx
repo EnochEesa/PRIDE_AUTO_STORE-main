@@ -7,7 +7,7 @@ export default function Hero() {
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: `url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1920&q=80')`,
+          backgroundImage: `url('https://commons.wikimedia.org/wiki/Special:FilePath/Premier_Padmini.jpg')`,
         }}
       />
 
@@ -27,7 +27,7 @@ export default function Hero() {
         <div className="max-w-3xl">
           <div className="flex items-center gap-3 mb-6 animate-on-load stagger-1">
             <div className="w-8 h-px bg-brand-500" />
-            <span className="section-label">Premium Auto Parts</span>
+            <span className="section-label">Fiat & Premier Heritage Parts</span>
           </div>
 
           <h1
@@ -39,8 +39,8 @@ export default function Hero() {
           </h1>
 
           <p className="text-white/60 text-lg md:text-xl leading-relaxed max-w-xl mb-10 animate-on-load stagger-3">
-            Sourcing the finest automobile spare parts for every make and model.
-            Quality you can feel. Performance you can trust.
+            Specialist spares for Fiat Padmini, Premier classics, and dependable daily
+            drivers. Heritage fitment knowledge, modern nationwide delivery.
           </p>
 
           <div className="flex flex-wrap gap-4 animate-on-load stagger-4">

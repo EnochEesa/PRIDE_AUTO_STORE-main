@@ -5,6 +5,7 @@ import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, Search } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
+import { sanitizeSearchQuery } from "@/lib/security";
 
 interface Product {
   _id: string;
@@ -22,7 +23,7 @@ const DEMO_PRODUCTS: Product[] = [
     name: "High-Performance Piston Kit",
     price: 3499,
     category: "Engine Parts",
-    description: "OEM-quality with 12-month warranty.",
+    description: "OEM-quality fit and finish for dependable rebuilds.",
     stock: 15,
   },
   {
@@ -64,7 +65,7 @@ const normalizeProducts = (payload: unknown): Product[] => {
 function SearchResults() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const query = searchParams.get("q") || "";
+  const query = sanitizeSearchQuery(searchParams.get("q") || "");
   const [results, setResults] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchInput, setSearchInput] = useState(query);
@@ -138,8 +139,9 @@ function SearchResults() {
               <input
                 type="text"
                 value={searchInput}
-                onChange={(event) => setSearchInput(event.target.value)}
+                onChange={(event) => setSearchInput(sanitizeSearchQuery(event.target.value))}
                 placeholder="Search again..."
+                maxLength={60}
                 className="w-full border border-white/10 bg-dark-700 py-3 pl-12 pr-24 text-sm text-white placeholder-white/30 transition-colors focus:border-brand-500 focus:outline-none"
               />
               <button

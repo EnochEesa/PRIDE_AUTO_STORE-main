@@ -22,6 +22,7 @@ import {
   statusFlow,
   type OrderRecord,
 } from "@/lib/orders";
+import { sanitizeContact, sanitizeOrderReference } from "@/lib/security";
 
 const priceFormatter = new Intl.NumberFormat("en-IN");
 const formatCurrency = (value: number): string =>
@@ -36,8 +37,8 @@ const formatDate = (value: string): string =>
 function OrdersContent() {
   const searchParams = useSearchParams();
   const { user } = useAuth();
-  const [reference, setReference] = useState(searchParams.get("order") || "");
-  const [contact, setContact] = useState(user?.email || "");
+  const [reference, setReference] = useState(sanitizeOrderReference(searchParams.get("order") || ""));
+  const [contact, setContact] = useState(sanitizeContact(user?.email || ""));
   const [selectedOrder, setSelectedOrder] = useState<OrderRecord | null>(null);
   const [recentOrders, setRecentOrders] = useState<OrderRecord[]>([]);
   const [error, setError] = useState("");
@@ -45,12 +46,12 @@ function OrdersContent() {
   const placedNow = searchParams.get("placed") === "1";
 
   useEffect(() => {
-    setContact((current) => current || user?.email || "");
+    setContact((current) => current || sanitizeContact(user?.email || ""));
     setRecentOrders(user?.email ? getOrdersForUser(user.email) : getAllOrders().slice(0, 2));
   }, [user?.email]);
 
   useEffect(() => {
-    const prefilledReference = searchParams.get("order");
+    const prefilledReference = sanitizeOrderReference(searchParams.get("order") || "");
     if (!prefilledReference) return;
 
     const match =
@@ -131,8 +132,9 @@ function OrdersContent() {
                   <input
                     type="text"
                     value={reference}
-                    onChange={(event) => setReference(event.target.value.toUpperCase())}
+                    onChange={(event) => setReference(sanitizeOrderReference(event.target.value))}
                     placeholder="Example: PAS-240731 or PRIDE-TRACK-731"
+                    maxLength={32}
                     className="w-full border border-white/10 bg-dark-700 py-3 pl-12 pr-4 text-sm text-white placeholder-white/30 transition-colors focus:border-brand-500 focus:outline-none"
                   />
                 </div>
@@ -147,8 +149,9 @@ function OrdersContent() {
                   <input
                     type="text"
                     value={contact}
-                    onChange={(event) => setContact(event.target.value)}
+                    onChange={(event) => setContact(sanitizeContact(event.target.value))}
                     placeholder="Use the checkout email for a precise match"
+                    maxLength={80}
                     className="w-full border border-white/10 bg-dark-700 py-3 pl-12 pr-4 text-sm text-white placeholder-white/30 transition-colors focus:border-brand-500 focus:outline-none"
                   />
                 </div>

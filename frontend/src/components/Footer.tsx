@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Zap, MapPin, Phone, Mail, Instagram, Facebook, MessageCircle } from "lucide-react";
+import { MapPin, Phone, Mail, Instagram, Facebook, MessageCircle } from "lucide-react";
+import BrandLogo from "@/components/BrandLogo";
 
 const SOCIAL_LINKS = [
   {
@@ -28,19 +29,15 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
           <div className="md:col-span-2">
             <Link href="/" className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 bg-brand-500 flex items-center justify-center">
-                <Zap className="w-5 h-5 text-white" fill="currentColor" />
-              </div>
-              <span
-                className="text-2xl tracking-[0.15em] text-white"
-                style={{ fontFamily: "var(--font-display)" }}
-              >
-                PRIDE AUTO STORE
-              </span>
+              <BrandLogo
+                size="sm"
+                subtitle="Classic Fiat & Premier Spares"
+                iconClassName="drop-shadow-[0_8px_18px_rgba(249,115,22,0.18)]"
+              />
             </Link>
             <p className="text-white/40 text-sm leading-relaxed max-w-sm mb-6">
-              Your trusted source for quality automobile spare parts. We carry genuine
-              and aftermarket parts for all major makes and models across India.
+              Curated Fiat, Premier, and workshop-ready spare parts from Coimbatore,
+              backed by fitment guidance and reliable nationwide dispatch.
             </p>
             <div className="flex gap-3">
               {SOCIAL_LINKS.map(({ label, href, icon: Icon }) => (

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { ChevronDown, Search, SlidersHorizontal } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
+import { sanitizeSearchQuery } from "@/lib/security";
 
 interface Product {
   _id: string;
@@ -125,7 +126,8 @@ export default function ProductsPage() {
               type="text"
               placeholder="Search parts, categories, brands..."
               value={search}
-              onChange={(event) => setSearch(event.target.value)}
+              onChange={(event) => setSearch(sanitizeSearchQuery(event.target.value))}
+              maxLength={60}
               className="w-full rounded-none border border-white/10 bg-dark-700 py-3 pl-12 pr-4 text-sm text-white placeholder-white/30 transition-colors focus:border-brand-500 focus:outline-none"
             />
           </div>
@@ -237,7 +239,7 @@ function generateDemoProducts(): Product[] {
     name,
     price: Math.floor(Math.random() * 8000) + 500,
     category: categories[index % categories.length],
-    description: "OEM-quality replacement part with 12-month warranty.",
+    description: "OEM-quality replacement part with dependable fit and finish.",
     image: `https://picsum.photos/seed/${index + 10}/400/400`,
     stock: Math.floor(Math.random() * 50) + 1,
   }));
