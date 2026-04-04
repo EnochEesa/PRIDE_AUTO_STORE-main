@@ -89,7 +89,7 @@ const getSafeImageUrl = (value?: string) => {
   }
 };
 
-export default function ProductDetailPage({ params }: { params: { id: string } }) {
+export default function ProductDetailPage({ params }: { readonly params: { readonly id: string } }) {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [qty, setQty] = useState(1);
@@ -129,10 +129,25 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
     fetchProduct();
   }, [params.id]);
 
-  const imageUrl = product && !imgError
-    ? (getSafeImageUrl(product.image) ?? getFallbackImage(product._id))
-    : getFallbackImage(product?._id ?? params.id);
+  let imageUrl = getFallbackImage(product?._id ?? params.id);
+  if (product && !imgError && product.image) {
+    const safeUrl = getSafeImageUrl(product.image);
+    if (safeUrl) {
+      imageUrl = safeUrl;
+    }
+  }
+
   const isOutOfStock = product?.stock === 0;
+
+  let stockClassName = "text-green-400";
+  let stockLabel = "In stock";
+  if (isOutOfStock) {
+    stockClassName = "text-red-400";
+    stockLabel = "Out of stock";
+  } else if (product?.stock && product.stock < 5) {
+    stockClassName = "text-amber-400";
+    stockLabel = `Only ${product.stock} left`;
+  }
 
   const handleAddToCart = () => {
     if (!product) return;
@@ -152,10 +167,10 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
   };
 
   const handleShare = async () => {
-    if (!product || typeof navigator === "undefined" || !navigator.share || typeof window === "undefined") return;
+    if (!product || globalThis.navigator === undefined || !globalThis.navigator.share || globalThis.window === undefined) return;
 
     try {
-      await navigator.share({ title: product.name, url: window.location.href });
+      await globalThis.navigator.share({ title: product.name, url: globalThis.window.location.href });
     } catch {
       // User dismissal is expected for share dialogs.
     }
@@ -266,10 +281,10 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
 
             <div className="mb-4 flex items-center gap-3">
               <div className="flex gap-1">
-                {Array.from({ length: 5 }).map((_, i) => (
+                {[1, 2, 3, 4, 5].map((num) => (
                   <Star
-                    key={i}
-                    className={`h-4 w-4 ${i < 4 ? "fill-brand-400 text-brand-400" : "text-white/20"}`}
+                    key={num}
+                    className={`h-4 w-4 ${num <= 4 ? "fill-brand-400 text-brand-400" : "text-white/20"}`}
                   />
                 ))}
               </div>
@@ -296,8 +311,8 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
               )}
               <div>
                 <span className="text-white/30">Stock: </span>
-                <span className={isOutOfStock ? "text-red-400" : product.stock && product.stock < 5 ? "text-amber-400" : "text-green-400"}>
-                  {isOutOfStock ? "Out of stock" : product.stock && product.stock < 5 ? `Only ${product.stock} left` : "In stock"}
+                <span className={stockClassName}>
+                  {stockLabel}
                 </span>
               </div>
             </div>
