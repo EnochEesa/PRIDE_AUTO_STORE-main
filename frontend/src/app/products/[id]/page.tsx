@@ -167,7 +167,7 @@ export default function ProductDetailPage({ params }: { readonly params: { reado
   };
 
   const handleShare = async () => {
-    if (!product || globalThis.navigator === undefined || !globalThis.navigator.share || globalThis.window === undefined) return;
+    if (!product || !globalThis.navigator?.share || globalThis.window === undefined) return;
 
     try {
       await globalThis.navigator.share({ title: product.name, url: globalThis.window.location.href });
