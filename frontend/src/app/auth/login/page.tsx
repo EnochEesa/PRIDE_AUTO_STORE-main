@@ -33,57 +33,75 @@ function LoginContent() {
   };
 
   return (
-    <div className="min-h-screen bg-dark-900 flex">
-      <div className="hidden lg:flex flex-1 relative overflow-hidden">
+    <div className="min-h-screen bg-dark-900 flex overflow-hidden">
+      {/* Left side: Premium Visual */}
+      <div className="hidden lg:flex flex-1 relative overflow-hidden group">
         <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: "url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1200&q=80')" }}
+          className="absolute inset-0 bg-cover bg-center transition-transform duration-[2000ms] group-hover:scale-105"
+          style={{ backgroundImage: "url('https://motorwagon.co/wp-content/uploads/2025/01/DSC06313-scaled.jpeg')" }}
         />
-        <div className="absolute inset-0 bg-dark-900/75" />
-        <div className="relative flex flex-col justify-between p-12 w-full">
-          <Link href="/" className="w-fit">
+        <div className="absolute inset-0 bg-gradient-to-tr from-dark-900 via-dark-900/30 to-transparent" />
+        <div className="absolute inset-0 bg-noise opacity-20" />
+        
+        <div className="relative flex flex-col justify-between p-16 w-full z-10">
+          <Link href="/" className="w-fit animate-in fade-in slide-in-from-top-4 duration-700">
             <BrandLogo size="sm" subtitle="Classic Fiat & Premier Spares" />
           </Link>
-          <div>
-            <h2 className="font-display text-6xl text-white tracking-wider leading-none mb-4" style={{ fontFamily: "var(--font-display)" }}>
-              WELCOME<br />BACK
+          
+          <div className="animate-in fade-in slide-in-from-left-8 duration-1000 delay-300">
+            <div className="h-1 w-12 bg-brand-500 mb-8" />
+            <h2 
+              className="font-display text-7xl xl:text-8xl text-white tracking-widest leading-[0.9] mb-6 drop-shadow-2xl" 
+              style={{ fontFamily: "var(--font-display)" }}
+            >
+              WELCOME<br />
+              <span className="text-gradient">BACK</span>
             </h2>
-            <p className="text-white/40 text-lg max-w-sm">
-              Sign in to access your orders, saved parts, and exclusive deals.
+            <p className="text-white/60 text-lg max-w-sm leading-relaxed border-l border-white/10 pl-6">
+              Sign in to access your curated dashboard, service history, and exclusive heritage parts.
             </p>
           </div>
-          <p className="text-white/20 text-sm">Copyright {new Date().getFullYear()} Pride Auto Store</p>
+          
+          <div className="flex items-center gap-6 animate-in fade-in duration-1000 delay-500">
+            <p className="text-white/20 text-xs tracking-widest uppercase">© {new Date().getFullYear()} Pride Auto Store</p>
+          </div>
         </div>
       </div>
 
-      <div className="flex-1 flex items-center justify-center px-4 sm:px-8 lg:px-16 py-20">
-        <div className="w-full max-w-md">
-          <Link href="/" className="mb-10 inline-flex lg:hidden">
+      {/* Right side: Modern Auth Form */}
+      <div className="flex-1 flex items-center justify-center px-4 sm:px-8 lg:px-20 py-20 bg-dark-900 relative">
+        <div className="absolute inset-0 bg-noise opacity-10 pointer-events-none" />
+        
+        <div className="w-full max-w-md relative z-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
+          <Link href="/" className="mb-12 inline-flex lg:hidden">
             <BrandLogo size="sm" />
           </Link>
 
-          <p className="section-label mb-3">Welcome back</p>
-          <h1 className="font-display text-4xl text-white tracking-wider mb-2" style={{ fontFamily: "var(--font-display)" }}>
-            SIGN IN
-          </h1>
-          <p className="text-white/40 text-sm mb-8">
-            Don't have an account?{" "}
-            <Link href="/auth/signup" className="text-brand-400 hover:text-brand-300 transition-colors">
-              Create one
-            </Link>
-          </p>
+          <div className="mb-10">
+            <p className="section-label mb-4 opacity-70">Secured Access</p>
+            <h1 className="font-display text-5xl text-white tracking-wider mb-3" style={{ fontFamily: "var(--font-display)" }}>
+              SIGN IN
+            </h1>
+            <p className="text-white/40 text-sm">
+              New to the heritage community?{" "}
+              <Link href="/auth/signup" className="text-brand-400 hover:text-brand-300 transition-colors font-semibold underline underline-offset-4">
+                Register here
+              </Link>
+            </p>
+          </div>
 
           {error && (
-            <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm px-4 py-3 mb-6">
+            <div className="bg-red-500/5 border border-red-500/20 text-red-400 text-xs px-4 py-3 mb-8 flex items-center gap-3 animate-in fade-in zoom-in-95">
+              <div className="h-1.5 w-1.5 rounded-full bg-red-500" />
               {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div>
-              <label className="text-white/40 text-xs tracking-widest uppercase block mb-2">Email Address</label>
-              <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <label className="text-white/40 text-[10px] tracking-[0.2em] uppercase block font-bold">Email Address</label>
+              <div className="relative group">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-brand-500 transition-colors" />
                 <input
                   type="email"
                   required
@@ -92,34 +110,42 @@ function LoginContent() {
                   placeholder="you@example.com"
                   autoComplete="email"
                   maxLength={120}
-                  className="w-full bg-dark-700 border border-white/10 pl-12 pr-4 py-3 text-white placeholder-white/20 text-sm focus:outline-none focus:border-brand-500 transition-colors"
+                  className="w-full bg-dark-800/50 border border-white/5 pl-12 pr-4 py-3.5 text-white placeholder-white/10 text-sm focus:outline-none focus:border-brand-500/50 focus:bg-dark-800 transition-all"
                 />
               </div>
             </div>
 
-            <div>
-              <label className="text-white/40 text-xs tracking-widest uppercase block mb-2">Password</label>
-              <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+            <div className="space-y-2">
+              <label className="text-white/40 text-[10px] tracking-[0.2em] uppercase block font-bold">Password</label>
+              <div className="relative group">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-brand-500 transition-colors" />
                 <input
                   type={showPass ? "text" : "password"}
                   required
                   value={password}
                   onChange={(e) => setPassword(sanitizeSecret(e.target.value, 128))}
-                  placeholder="********"
+                  placeholder="••••••••"
                   autoComplete="current-password"
                   minLength={6}
                   maxLength={128}
-                  className="w-full bg-dark-700 border border-white/10 pl-12 pr-12 py-3 text-white placeholder-white/20 text-sm focus:outline-none focus:border-brand-500 transition-colors"
+                  className="w-full bg-dark-800/50 border border-white/5 pl-12 pr-12 py-3.5 text-white placeholder-white/10 text-sm focus:outline-none focus:border-brand-500/50 focus:bg-dark-800 transition-all"
                 />
-                <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white transition-colors">
+                <button 
+                  type="button" 
+                  onClick={() => setShowPass(!showPass)} 
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors"
+                >
                   {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
             </div>
 
-            <div className="flex justify-end">
-              <Link href="/auth/forgot-password" className="text-white/40 hover:text-white text-xs transition-colors">
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-2 cursor-pointer group">
+                <input type="checkbox" className="w-4 h-4 rounded border-white/10 bg-dark-700 text-brand-500 focus:ring-brand-500/20" />
+                <span className="text-white/40 text-xs group-hover:text-white/60 transition-colors">Remember me</span>
+              </label>
+            <Link href="/auth/forgot-password" className="text-white/40 hover:text-white text-xs transition-colors font-medium">
                 Forgot password?
               </Link>
             </div>
@@ -127,20 +153,65 @@ function LoginContent() {
             <button
               type="submit"
               disabled={loading}
-              className="btn-primary w-full flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn-primary w-full h-12 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-bold tracking-widest group"
             >
               {loading ? (
-                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <span className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
               ) : (
-                <>Sign In <ArrowRight className="w-4 h-4" /></>
+                <>
+                  SIGN INTO ACCOUNT
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </>
               )}
+            </button>
+
+            <div className="relative py-4">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-white/5"></div>
+              </div>
+              <div className="relative flex justify-center text-[10px] uppercase tracking-widest">
+                <span className="bg-dark-900 px-4 text-white/20 font-bold">Or continue with</span>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              className="w-full h-12 border border-white/5 bg-dark-800/30 hover:bg-dark-800 text-white/70 hover:text-white flex items-center justify-center gap-3 transition-all text-xs font-bold tracking-widest"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24">
+                <path
+                  fill="currentColor"
+                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                />
+                <path
+                  fill="currentColor"
+                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                />
+                <path
+                  fill="currentColor"
+                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"
+                />
+                <path
+                  fill="currentColor"
+                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                />
+              </svg>
+              Sign in with Google
             </button>
           </form>
 
-          <div className="mt-6 p-4 bg-dark-800 border border-white/5 text-xs text-white/30">
-            <p className="font-semibold text-white/50 mb-1">Demo credentials</p>
-            <p>User access: any valid email + password (min 6 chars).</p>
-            <p className="mt-1">Admin access: <span className="text-white">admin@prideautostore.com</span> + any 6+ character password.</p>
+          <div className="mt-12 p-6 bg-brand-500/5 border border-brand-500/10 backdrop-blur-sm relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-brand-500/5 rounded-full -mr-12 -mt-12 transition-transform duration-700 group-hover:scale-110" />
+            <div className="relative z-10">
+              <p className="font-bold text-brand-400 text-[10px] tracking-widest uppercase mb-2 flex items-center gap-2">
+                <span className="h-1 w-3 bg-brand-500" />
+                Demo Credentials
+              </p>
+              <div className="space-y-1.5 text-white/40 text-[11px] leading-relaxed">
+                <p>User Access: Any valid email + 6+ chars</p>
+                <p>Admin Access: <span className="text-white font-bold">admin@prideautostore.com</span></p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
