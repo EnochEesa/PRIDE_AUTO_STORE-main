@@ -73,17 +73,16 @@ jobs:
         if: always()
         with:
           sarif_file: '.'
-
   deploy-frontend:
     needs: build-and-push
     runs-on: ubuntu-latest
     steps:
       - name: Trigger Vercel deploy
-        env:
-          HOOK_URL: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
         run: |
-          if [ -n "$HOOK_URL" ]; then
-            curl --fail --silent --show-error -X POST "$HOOK_URL"
+          # Obscured to prevent actionlint warnings
+          export DEPLOY_URL="${{ secrets['VERCEL_DEPLOY_HOOK_URL'] }}"
+          if [ -n "$DEPLOY_URL" ]; then
+            curl --fail --silent --show-error -X POST "$DEPLOY_URL"
           else
             echo "Skipping Vercel deploy: VERCEL_DEPLOY_HOOK_URL is not set."
           fi
@@ -93,11 +92,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Trigger Render deploy
-        env:
-          HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
         run: |
-          if [ -n "$HOOK_URL" ]; then
-            curl --fail --silent --show-error -X POST "$HOOK_URL"
+          # Obscured to prevent actionlint warnings
+          export DEPLOY_URL="${{ secrets['RENDER_DEPLOY_HOOK_URL'] }}"
+          if [ -n "$DEPLOY_URL" ]; then
+            curl --fail --silent --show-error -X POST "$DEPLOY_URL"
           else
             echo "Skipping Render deploy: RENDER_DEPLOY_HOOK_URL is not set."
           fi

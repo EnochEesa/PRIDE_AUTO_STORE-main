@@ -22,19 +22,20 @@ spec:
       terminationGracePeriodSeconds: 60
       automountServiceAccountToken: false
       securityContext:
+        runAsUser: 10001
+        fsGroup: 20000
         runAsNonRoot: true
-        runAsUser: 1000
-        fsGroup: 2000
       containers:
       - name: frontend
         image: pride-auto-store-frontend:1.0.0
         imagePullPolicy: Always
         securityContext:
-          allowPrivilegeEscalation: false
           capabilities:
             drop:
               - ALL
+          runAsUser: 10001
           readOnlyRootFilesystem: true
+          allowPrivilegeEscalation: false
         ports:
         - containerPort: 3000
         resources:

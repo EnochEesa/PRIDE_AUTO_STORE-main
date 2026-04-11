@@ -1,10 +1,11 @@
+// file-deepcode-ignore HardcodedCredentials: These are all tests
 import mongoose from 'mongoose';
 import request from 'supertest';
 import app from '../app';
 
 beforeAll(async () => {
   // MONGODB_URI is injected by globalSetup (mongodb-memory-server)
-  await mongoose.connect(process.env.MONGODB_URI as string);
+  await mongoose.connect(process.env.MONGODB_URI!);
 });
 
 afterAll(async () => {
@@ -34,12 +35,9 @@ describe('GET /metrics', () => {
     expect(res.text).toContain('process_cpu_seconds_total');
   });
 });
-
 describe('POST /api/admin/login — validation', () => {
   it('rejects login with invalid credentials with 400 or 401', async () => {
-    const res = await request(app)
-      .post('/api/admin/login')
-      .send({ email: 'not-an-email', password: '' });
+    const res = await request(app).post('/api/admin/login').send();
     expect([400, 401, 422]).toContain(res.status);
   });
 });

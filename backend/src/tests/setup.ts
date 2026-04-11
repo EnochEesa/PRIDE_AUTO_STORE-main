@@ -9,5 +9,5 @@ export default async function globalSetup() {
   process.env.JWT_SECRET = 'test-secret-do-not-use-in-production';
   process.env.FRONTEND_URL = 'http://localhost:3000';
   // store the instance reference so teardown can stop it
-  (global as Record<string, unknown>).__MONGOD__ = mongod;
+  (globalThis as Record<string, unknown>).__MONGOD__ = mongod;
 }
