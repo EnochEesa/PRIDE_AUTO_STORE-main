@@ -39,7 +39,7 @@ describe('POST /api/admin/login — validation', () => {
   it('rejects login with invalid credentials with 400 or 401', async () => {
     const res = await request(app)
       .post('/api/admin/login')
-      // snyk:ignore
+      // deepcode ignore HardcodedCredentials: intentional for testing
       .send({ email: 'admin@pride.com', password: process.env.TEST_SECRET });
     expect([400, 401, 422]).toContain(res.status);
   });
