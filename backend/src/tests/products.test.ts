@@ -37,9 +37,13 @@ describe('GET /metrics', () => {
 });
 describe('POST /api/admin/login — validation', () => {
   it('rejects login with invalid credentials with 400 or 401', async () => {
+    const testCredentials = {
+      email: process.env.TEST_EMAIL,
+      password: process.env.TEST_SECRET,
+    };
     const res = await request(app)
       .post('/api/admin/login')
-      .send({ email: 'admin@pride.com', password: process.env.TEST_SECRET });
+      .send(testCredentials);
     expect([400, 401, 422]).toContain(res.status);
   });
 });
