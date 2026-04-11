@@ -20,4 +20,5 @@ export const env = {
   ADMIN_SEED_EMAIL: process.env.ADMIN_SEED_EMAIL || 'admin@prideautostore.in',
   ADMIN_NAME:    process.env.ADMIN_NAME || 'Pride Admin',
   ADMIN_SEED_PASSWORD: process.env.ADMIN_SEED_PASSWORD || '',
+  GOOGLE_CLIENT_ID:    process.env.GOOGLE_CLIENT_ID || '',
 };

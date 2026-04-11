@@ -30,6 +30,7 @@ const AuthContext = createContext<{
   loading: boolean;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   signup: (name: string, email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  googleLogin: (idToken: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
 } | null>(null);
 
@@ -106,7 +107,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     try {
-      const res = await fetch("/api/auth/login", {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
+      const res = await fetch(`${apiUrl}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: safeEmail, password: safePassword }),
@@ -122,17 +124,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       persistUser(normalized);
       setState({ user: normalized, loading: false });
       return { success: true };
-    } catch {
-      const demoUser = buildUser({
-        _id: "demo_1",
-        name: sanitizeName(safeEmail.split("@")[0].replace(/[._-]+/g, " ")) || "Pride Customer",
-        email: safeEmail,
-        token: `demo_token_${Date.now()}`,
-      });
-
-      persistUser(demoUser);
-      setState({ user: demoUser, loading: false });
-      return { success: true };
+    } catch (err) {
+      return { success: false, error: "Connection error. Please try again later." };
     }
   };
 
@@ -154,7 +147,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     try {
-      const res = await fetch("/api/auth/register", {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
+      const res = await fetch(`${apiUrl}/api/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: safeName, email: safeEmail, password: safePassword }),
@@ -170,17 +164,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       persistUser(normalized);
       setState({ user: normalized, loading: false });
       return { success: true };
-    } catch {
-      const demoUser = buildUser({
-        _id: `demo_${Date.now()}`,
-        name: safeName,
-        email: safeEmail,
-        token: `demo_token_${Date.now()}`,
-      });
+    } catch (err) {
+      return { success: false, error: "Connection error. Please try again later." };
+    }
+  };
 
-      persistUser(demoUser);
-      setState({ user: demoUser, loading: false });
+  const googleLogin = async (idToken: string) => {
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
+      const res = await fetch(`${apiUrl}/api/auth/google`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken }),
+      });
+      const data = await res.json();
+      if (!res.ok) return { success: false, error: data.message || "Google login failed" };
+
+      const normalized = normalizeUser(data.user ?? data);
+      if (!normalized) {
+        return { success: false, error: "Unexpected response from server" };
+      }
+
+      persistUser(normalized);
+      setState({ user: normalized, loading: false });
       return { success: true };
+    } catch (err) {
+      return { success: false, error: "Failed to connect to authentication server" };
     }
   };
 
@@ -191,7 +200,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ ...state, login, signup, logout }}>
+    <AuthContext.Provider value={{ ...state, login, signup, googleLogin, logout }}>
       {children}
     </AuthContext.Provider>
   );

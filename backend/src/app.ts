@@ -7,6 +7,7 @@ import { requestLogger } from './config/logger';
 import productsRouter  from './routes/products';
 import inquiriesRouter from './routes/inquiries';
 import adminRouter     from './routes/admin';
+import authRouter      from './routes/auth';
 import healthRouter    from './routes/health';
 import { env } from './config/env';
 
@@ -57,6 +58,7 @@ app.get('/', (_req, res) => {
 app.use('/api/products',   productsRouter);
 app.use('/api/inquiries',  inquiriesRouter);
 app.use('/api/admin',      adminRouter);
+app.use('/api/auth',       authRouter);
 app.use('/api/health',     healthRouter);
 
 // ── 404 handler ──────────────────────────────────────────────────────────────

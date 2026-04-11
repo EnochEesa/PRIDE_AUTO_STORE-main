@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff, ArrowRight, Lock, Mail } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { sanitizeEmail, sanitizeSecret } from "@/lib/security";
+import { useGoogleLogin } from "@react-oauth/google";
 
 function LoginContent() {
   const [email, setEmail] = useState("");
@@ -13,7 +14,7 @@ function LoginContent() {
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const { login } = useAuth();
+  const { login, googleLogin } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect") || "/";
@@ -31,6 +32,23 @@ function LoginContent() {
     }
   };
 
+  const handeGoogleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      setLoading(true);
+      setError("");
+      const result = await googleLogin(tokenResponse.access_token);
+      setLoading(false);
+      if (result.success) {
+        router.push(redirect);
+      } else {
+        setError(result.error || "Google selection failed");
+      }
+    },
+    onError: () => {
+      setError("Google Login failed. Please try again.");
+    },
+  });
+
   return (
     <div className="min-h-screen bg-dark-900 flex overflow-hidden">
       {/* Left side: Premium Visual */}
@@ -38,7 +56,6 @@ function LoginContent() {
         <div
           className="absolute inset-0 bg-cover bg-center transition-transform duration-[2000ms] group-hover:scale-105 bg-[url('https://motorwagon.co/wp-content/uploads/2025/01/DSC06313-scaled.jpeg')]"
         />
-        <div className="absolute inset-0 bg-gradient-to-tr from-dark-900 via-dark-900/30 to-transparent" />
         <div className="absolute inset-0 bg-noise opacity-20" />
         
         <div className="relative flex flex-col justify-end p-16 w-full z-10">
@@ -165,7 +182,9 @@ function LoginContent() {
 
             <button
               type="button"
-              className="w-full h-12 border border-white/5 bg-dark-800/30 hover:bg-dark-800 text-white/70 hover:text-white flex items-center justify-center gap-3 transition-all text-xs font-bold tracking-widest"
+              onClick={() => handeGoogleLogin()}
+              disabled={loading}
+              className="w-full h-12 border border-white/5 bg-dark-800/30 hover:bg-dark-800 text-white/70 hover:text-white flex items-center justify-center gap-3 transition-all text-xs font-bold tracking-widest disabled:opacity-50"
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24">
                 <path
@@ -194,11 +213,11 @@ function LoginContent() {
             <div className="relative z-10">
               <p className="font-bold text-brand-400 text-[10px] tracking-widest uppercase mb-2 flex items-center gap-2">
                 <span className="h-1 w-3 bg-brand-500" />
-                Demo Credentials
+                Live Status
               </p>
               <div className="space-y-1.5 text-white/40 text-[11px] leading-relaxed">
-                <p>User Access: Any valid email + 6+ chars</p>
-                <p>Admin Access: <span className="text-white font-bold">admin@prideautostore.com</span></p>
+                <p>Authentication system is active. Secure connection established.</p>
+                <p>Support: <span className="text-white font-bold">support@prideautostore.com</span></p>
               </div>
             </div>
           </div>
