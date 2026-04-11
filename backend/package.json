@@ -22,7 +22,7 @@
     "joi": "^17.12.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.2.3",
-    "nodemailer": "^8.0.4",
+    "nodemailer": "^8.0.5",
     "winston": "^3.13.0",
     "winston-mongodb": "^5.1.1"
   },
