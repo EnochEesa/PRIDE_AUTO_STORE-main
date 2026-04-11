@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -89,7 +89,8 @@ const getSafeImageUrl = (value?: string) => {
   }
 };
 
-export default function ProductDetailPage({ params }: { readonly params: { readonly id: string } }) {
+export default function ProductDetailPage({ params }: { readonly params: Promise<{ readonly id: string }> }) {
+  const { id } = use(params);
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [qty, setQty] = useState(1);
@@ -101,7 +102,7 @@ export default function ProductDetailPage({ params }: { readonly params: { reado
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const res = await fetch(`/api/products/${encodeURIComponent(params.id)}`);
+        const res = await fetch(`/api/products/${encodeURIComponent(id)}`);
         if (!res.ok) throw new Error("Not found");
 
         const data: ProductApiResponse = await res.json();
@@ -110,7 +111,7 @@ export default function ProductDetailPage({ params }: { readonly params: { reado
         setProduct(normalized);
       } catch {
         setProduct({
-          _id: params.id,
+          _id: id,
           name: "High-Performance Piston Kit",
           price: 3499,
           category: "Engine Parts",
@@ -118,8 +119,8 @@ export default function ProductDetailPage({ params }: { readonly params: { reado
             "OEM-quality piston kit compatible with a wide range of vehicles. Features a precision-engineered design for optimal performance and longevity. Comes with piston rings, pin, and clips for a dependable rebuild.",
           stock: 12,
           brand: "AutoPrime",
-          sku: `SKU-${params.id.toUpperCase()}`,
-          image: getFallbackImage(params.id),
+          sku: `SKU-${id.toUpperCase()}`,
+          image: getFallbackImage(id),
         });
       } finally {
         setLoading(false);
@@ -127,9 +128,9 @@ export default function ProductDetailPage({ params }: { readonly params: { reado
     };
 
     fetchProduct();
-  }, [params.id]);
+  }, [id]);
 
-  let imageUrl = getFallbackImage(product?._id ?? params.id);
+  let imageUrl = getFallbackImage(product?._id ?? id);
   if (product && !imgError && product.image) {
     const safeUrl = getSafeImageUrl(product.image);
     if (safeUrl) {
