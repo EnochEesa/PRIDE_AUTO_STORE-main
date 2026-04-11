@@ -32,3 +32,9 @@ Thumbs.db
 
 # Docker
 docker-compose.override.yml
+
+# Debug/scratch artifacts — never commit these to main
+/*.html
+/*.txt
+/server-fix.ts
+/vercel_out.txt

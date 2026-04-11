@@ -3,12 +3,13 @@ import cors from 'cors';
 import helmet from 'helmet';
 import mongoSanitize from 'express-mongo-sanitize';
 import { globalLimiter } from './middleware/rateLimiter';
-import { requestLogger } from './config/logger';
+import { requestLogger, logger } from './config/logger';
 import productsRouter  from './routes/products';
 import inquiriesRouter from './routes/inquiries';
 import adminRouter     from './routes/admin';
 import authRouter      from './routes/auth';
 import healthRouter    from './routes/health';
+import metricsRouter   from './routes/metrics';
 import { env } from './config/env';
 
 const app = express();
@@ -60,6 +61,7 @@ app.use('/api/inquiries',  inquiriesRouter);
 app.use('/api/admin',      adminRouter);
 app.use('/api/auth',       authRouter);
 app.use('/api/health',     healthRouter);
+app.use('/metrics',        metricsRouter);
 
 // ── 404 handler ──────────────────────────────────────────────────────────────
 app.use((_req, res) => {
@@ -68,7 +70,7 @@ app.use((_req, res) => {
 
 // ── Global error handler ──────────────────────────────────────────────────────
 app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
-  console.error(err.stack);
+  logger.error({ message: err.message, stack: err.stack });
   res.status(500).json({ success: false, error: 'Internal server error.' });
 });
 

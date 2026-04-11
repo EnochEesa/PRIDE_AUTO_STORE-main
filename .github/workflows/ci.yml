@@ -28,5 +28,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Security audit
+        run: npm audit --audit-level=high
+
       - name: Build application
         run: npm run build
+
+      - name: Run tests
+        if: matrix.app == 'backend'
+        run: npm test -- --forceExit

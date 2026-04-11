@@ -6,8 +6,6 @@ services:
     image: mongo
     container_name: pride_mongo
     restart: always
-    ports:
-      - "27017:27017"
     volumes:
       - mongo_data:/data/db
 
