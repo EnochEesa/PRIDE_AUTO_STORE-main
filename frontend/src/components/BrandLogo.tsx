@@ -23,7 +23,7 @@ function joinClasses(...classes: Array<string | undefined | false>): string {
   return classes.filter(Boolean).join(" ");
 }
 
-export function BrandMark({ className }: { className?: string }) {
+export function BrandMark({ className }: Readonly<{ className?: string }>) {
   return (
     <svg
       viewBox="0 0 64 64"
@@ -34,8 +34,8 @@ export function BrandMark({ className }: { className?: string }) {
     >
       <defs>
         <linearGradient id="brandLogoGradient" x1="8" y1="10" x2="56" y2="54" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#FB923C" />
-          <stop offset="1" stopColor="#EA580C" />
+          <stop stopColor="#D4000F" />
+          <stop offset="1" stopColor="#C9A84C" />
         </linearGradient>
       </defs>
       <path d="M8 12H47L56 21V52H17L8 43V12Z" fill="url(#brandLogoGradient)" />
@@ -59,7 +59,7 @@ export default function BrandLogo({
   showText = true,
   size = "md",
   subtitle,
-}: BrandLogoProps) {
+}: Readonly<BrandLogoProps>) {
   const sizeClass = SIZE_MAP[size];
 
   return (
@@ -69,10 +69,9 @@ export default function BrandLogo({
         <div className="flex min-w-0 flex-col">
           <span
             className={joinClasses(
-              "whitespace-nowrap text-white transition-colors",
+              "whitespace-nowrap text-white transition-colors font-display",
               sizeClass.title
             )}
-            style={{ fontFamily: "var(--font-display)" }}
           >
             PRIDE AUTO STORE
           </span>

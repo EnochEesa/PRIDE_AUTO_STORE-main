@@ -15,7 +15,7 @@ export default function Hero() {
       <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-transparent via-brand-500 to-transparent" />
 
       <div className="absolute top-32 right-8 md:right-16 lg:right-32 hidden md:block">
-        <div className="border border-brand-500/30 bg-brand-500/5 backdrop-blur-sm px-4 py-2 text-xs text-brand-400 font-semibold tracking-widest uppercase animate-pulse">
+        <div className="border border-gold/30 bg-gold/5 backdrop-blur-sm px-4 py-2 text-xs text-gold font-semibold tracking-widest uppercase animate-pulse">
           Trusted Since 2000
         </div>
       </div>
@@ -59,7 +59,7 @@ export default function Hero() {
             ].map((stat) => (
               <div key={stat.label}>
                 <div
-                  className="text-3xl font-display text-brand-400"
+                  className="text-3xl font-display text-gold"
                 >
                   {stat.value}
                 </div>

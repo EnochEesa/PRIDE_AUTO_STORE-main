@@ -105,11 +105,12 @@ function LoginContent() {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <label className="text-white/40 text-[10px] tracking-[0.2em] uppercase block font-bold">Email Address</label>
+              <label htmlFor="email" className="text-white/40 text-[10px] tracking-[0.2em] uppercase block font-bold">Email Address</label>
               <div className="relative group">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-brand-500 transition-colors" />
                 <input
                   type="email"
+                  id="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(sanitizeEmail(e.target.value))}
@@ -122,11 +123,12 @@ function LoginContent() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-white/40 text-[10px] tracking-[0.2em] uppercase block font-bold">Password</label>
+              <label htmlFor="password" className="text-white/40 text-[10px] tracking-[0.2em] uppercase block font-bold">Password</label>
               <div className="relative group">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-brand-500 transition-colors" />
                 <input
                   type={showPass ? "text" : "password"}
+                  id="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(sanitizeSecret(e.target.value, 128))}
@@ -212,8 +214,7 @@ function LoginContent() {
             <div className="absolute top-0 right-0 w-24 h-24 bg-brand-500/5 rounded-full -mr-12 -mt-12 transition-transform duration-700 group-hover:scale-110" />
             <div className="relative z-10">
               <p className="font-bold text-brand-400 text-[10px] tracking-widest uppercase mb-2 flex items-center gap-2">
-                <span className="h-1 w-3 bg-brand-500" />
-                Live Status
+                <span className="h-1 w-3 bg-brand-500" />{" "}Live Status
               </p>
               <div className="space-y-1.5 text-white/40 text-[11px] leading-relaxed">
                 <p>Authentication system is active. Secure connection established.</p>

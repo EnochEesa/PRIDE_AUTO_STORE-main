@@ -21,9 +21,20 @@ spec:
     spec:
       terminationGracePeriodSeconds: 60
       automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 2000
       containers:
       - name: frontend
         image: pride-auto-store-frontend:1.0.0
+        imagePullPolicy: Always
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          readOnlyRootFilesystem: true
         ports:
         - containerPort: 3000
         resources:
@@ -64,3 +75,5 @@ spec:
     port: 80
     targetPort: 3000
   type: LoadBalancer
+  loadBalancerSourceRanges:
+  - 0.0.0.0/0 # Restricted to world by default, update with specific CIDRs if known

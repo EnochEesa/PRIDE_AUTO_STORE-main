@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, useMemo, type ReactNode } from "react";
 import {
   isAdminEmail,
   isValidEmail,
@@ -35,7 +35,7 @@ const AuthContext = createContext<{
 } | null>(null);
 
 const safeStorage = (): Storage | null =>
-  typeof window === "undefined" ? null : window.localStorage;
+  globalThis.window === undefined ? null : globalThis.localStorage;
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   Boolean(value) && typeof value === "object";
@@ -53,10 +53,13 @@ const buildUser = (value: {
 const normalizeUser = (value: unknown): User | null => {
   if (!isRecord(value)) return null;
 
-  const id = sanitizeTextInput(String(value._id ?? value.id ?? ""), 96);
-  const name = sanitizeName(String(value.name ?? ""));
-  const email = sanitizeEmail(String(value.email ?? ""));
-  const token = sanitizeTextInput(String(value.token ?? ""), 256);
+  const toString = (val: unknown): string => (typeof val === "string" ? val : "");
+
+  const rawId = value._id ?? value.id ?? "";
+  const id = sanitizeTextInput(toString(rawId), 96);
+  const name = sanitizeName(toString(value.name));
+  const email = sanitizeEmail(toString(value.email));
+  const token = sanitizeTextInput(toString(value.token), 256);
 
   if (!id || !name || !email || !token) return null;
   if (!isValidEmail(email)) return null;
@@ -75,7 +78,7 @@ const persistUser = (user: User) => {
   storage.setItem("pride_user", JSON.stringify(user));
 };
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
   const [state, setState] = useState<AuthState>({ user: null, loading: true });
 
   useEffect(() => {
@@ -89,7 +92,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const saved = storage.getItem("pride_user");
       const normalized = saved ? normalizeUser(JSON.parse(saved)) : null;
       setState({ user: normalized, loading: false });
-    } catch {
+    } catch (err) {
+      console.error("Failed to load user from storage:", err);
       setState((current) => ({ ...current, loading: false }));
     }
   }, []);
@@ -125,6 +129,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setState({ user: normalized, loading: false });
       return { success: true };
     } catch (err) {
+      console.error("Login application error:", err);
       return { success: false, error: "Connection error. Please try again later." };
     }
   };
@@ -165,6 +170,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setState({ user: normalized, loading: false });
       return { success: true };
     } catch (err) {
+      console.error("Signup application error:", err);
       return { success: false, error: "Connection error. Please try again later." };
     }
   };
@@ -189,6 +195,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setState({ user: normalized, loading: false });
       return { success: true };
     } catch (err) {
+      console.error("Google login failed:", err);
       return { success: false, error: "Failed to connect to authentication server" };
     }
   };
@@ -199,8 +206,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setState({ user: null, loading: false });
   };
 
+  const memoizedValue = useMemo(() => ({
+    ...state,
+    login,
+    signup,
+    googleLogin,
+    logout,
+  }), [state, login, signup, googleLogin, logout]);
+
   return (
-    <AuthContext.Provider value={{ ...state, login, signup, googleLogin, logout }}>
+    <AuthContext.Provider value={memoizedValue}>
       {children}
     </AuthContext.Provider>
   );

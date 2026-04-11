@@ -24,7 +24,7 @@ router.post('/google', async (req, res) => {
     });
 
     const payload = ticket.getPayload();
-    if (!payload || !payload.email) {
+    if (!payload?.email) {
       return res.status(401).json({ success: false, error: 'Invalid Google token' });
     }
 
