@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff, ArrowRight, Lock, Mail } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import BrandLogo from "@/components/BrandLogo";
 import { sanitizeEmail, sanitizeSecret } from "@/lib/security";
 
 function LoginContent() {
@@ -43,11 +42,7 @@ function LoginContent() {
         <div className="absolute inset-0 bg-gradient-to-tr from-dark-900 via-dark-900/30 to-transparent" />
         <div className="absolute inset-0 bg-noise opacity-20" />
         
-        <div className="relative flex flex-col justify-between p-16 w-full z-10">
-          <Link href="/" className="w-fit animate-in fade-in slide-in-from-top-4 duration-700">
-            <BrandLogo size="sm" subtitle="Classic Fiat & Premier Spares" />
-          </Link>
-          
+        <div className="relative flex flex-col justify-end p-16 w-full z-10">
           <div className="animate-in fade-in slide-in-from-left-8 duration-1000 delay-300">
             <div className="h-1 w-12 bg-brand-500 mb-8" />
             <h2 
@@ -73,10 +68,6 @@ function LoginContent() {
         <div className="absolute inset-0 bg-noise opacity-10 pointer-events-none" />
         
         <div className="w-full max-w-md relative z-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <Link href="/" className="mb-12 inline-flex lg:hidden">
-            <BrandLogo size="sm" />
-          </Link>
-
           <div className="mb-10">
             <p className="section-label mb-4 opacity-70">Secured Access</p>
             <h1 className="font-display text-5xl text-white tracking-wider mb-3" style={{ fontFamily: "var(--font-display)" }}>

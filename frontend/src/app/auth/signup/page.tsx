@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, ArrowRight, Lock, Mail, User } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import BrandLogo from "@/components/BrandLogo";
 import { sanitizeEmail, sanitizeName, sanitizeSecret } from "@/lib/security";
 
 export default function SignupPage() {
@@ -51,7 +50,6 @@ export default function SignupPage() {
         <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1200&q=80')" }} />
         <div className="absolute inset-0 bg-dark-900/75" />
         <div className="relative flex flex-col justify-between p-12 w-full">
-          <Link href="/" className="w-fit"><BrandLogo size="sm" subtitle="Classic Fiat & Premier Spares" /></Link>
           <div>
             <h2 className="font-display text-6xl text-white tracking-wider leading-none mb-4" style={{ fontFamily: "var(--font-display)" }}>
               JOIN THE<br />COMMUNITY
@@ -64,7 +62,6 @@ export default function SignupPage() {
 
       <div className="flex-1 flex items-center justify-center px-4 sm:px-8 lg:px-16 py-20">
         <div className="w-full max-w-md">
-          <Link href="/" className="mb-10 inline-flex lg:hidden"><BrandLogo size="sm" /></Link>
 
           <p className="section-label mb-3">Get started</p>
           <h1 className="font-display text-4xl text-white tracking-wider mb-2" style={{ fontFamily: "var(--font-display)" }}>CREATE ACCOUNT</h1>
