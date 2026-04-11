@@ -33,16 +33,17 @@ export default function SignupPage() {
     else setError(result.error || "Signup failed");
   };
 
-  const set = (key: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
-    setForm({
-      ...form,
-      [key]:
-        key === "name"
-          ? sanitizeName(e.target.value)
-          : key === "email"
-            ? sanitizeEmail(e.target.value)
-            : sanitizeSecret(e.target.value, 128),
-    });
+  const set = (key: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value;
+    if (key === "name") {
+      value = sanitizeName(value);
+    } else if (key === "email") {
+      value = sanitizeEmail(value);
+    } else {
+      value = sanitizeSecret(value, 128);
+    }
+    setForm({ ...form, [key]: value });
+  };
 
   return (
     <div className="min-h-screen bg-dark-900 flex">
@@ -64,7 +65,7 @@ export default function SignupPage() {
         <div className="w-full max-w-md">
 
           <p className="section-label mb-3">Get started</p>
-          <h1 className="font-display text-4xl text-white tracking-wider mb-2" style={{ fontFamily: "var(--font-display)" }}>CREATE ACCOUNT</h1>
+          <h1 className="font-display text-4xl text-white tracking-wider mb-2">CREATE ACCOUNT</h1>
           <p className="text-white/40 text-sm mb-8">
             Already have an account?{" "}
             <Link href="/auth/login" className="text-brand-400 hover:text-brand-300 transition-colors">Sign in</Link>
@@ -73,33 +74,48 @@ export default function SignupPage() {
           {error && <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm px-4 py-3 mb-6">{error}</div>}
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            {[
-              { label: "Full Name", key: "name", type: "text", icon: User, placeholder: "John Doe", auto: "name" },
-              { label: "Email Address", key: "email", type: "email", icon: Mail, placeholder: "you@example.com", auto: "email" },
-            ].map(({ label, key, type, icon: Icon, placeholder, auto }) => (
-              <div key={key}>
-                <label className="text-white/40 text-xs tracking-widest uppercase block mb-2">{label}</label>
-                <div className="relative">
-                  <Icon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
-                  <input
-                    type={type}
-                    required
-                    value={form[key as keyof typeof form]}
-                    onChange={set(key)}
-                    placeholder={placeholder}
-                    autoComplete={auto}
-                    maxLength={key === "name" ? 60 : 120}
-                    className="w-full bg-dark-700 border border-white/10 pl-12 pr-4 py-3 text-white placeholder-white/20 text-sm focus:outline-none focus:border-brand-500 transition-colors"
-                  />
-                </div>
+            <div>
+              <label htmlFor="name" className="text-white/40 text-xs tracking-widest uppercase block mb-2">Full Name</label>
+              <div className="relative">
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+                <input
+                  id="name"
+                  type="text"
+                  required
+                  value={form.name}
+                  onChange={set("name")}
+                  placeholder="John Doe"
+                  autoComplete="name"
+                  maxLength={60}
+                  className="w-full bg-dark-700 border border-white/10 pl-12 pr-4 py-3 text-white placeholder-white/20 text-sm focus:outline-none focus:border-brand-500 transition-colors"
+                />
               </div>
-            ))}
+            </div>
 
             <div>
-              <label className="text-white/40 text-xs tracking-widest uppercase block mb-2">Password</label>
+              <label htmlFor="email" className="text-white/40 text-xs tracking-widest uppercase block mb-2">Email Address</label>
+              <div className="relative">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+                <input
+                  id="email"
+                  type="email"
+                  required
+                  value={form.email}
+                  onChange={set("email")}
+                  placeholder="you@example.com"
+                  autoComplete="email"
+                  maxLength={120}
+                  className="w-full bg-dark-700 border border-white/10 pl-12 pr-4 py-3 text-white placeholder-white/20 text-sm focus:outline-none focus:border-brand-500 transition-colors"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="password" className="text-white/40 text-xs tracking-widest uppercase block mb-2">Password</label>
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
                 <input
+                  id="password"
                   type={showPass ? "text" : "password"}
                   required
                   value={form.password}
@@ -117,10 +133,11 @@ export default function SignupPage() {
             </div>
 
             <div>
-              <label className="text-white/40 text-xs tracking-widest uppercase block mb-2">Confirm Password</label>
+              <label htmlFor="confirm" className="text-white/40 text-xs tracking-widest uppercase block mb-2">Confirm Password</label>
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
                 <input
+                  id="confirm"
                   type={showPass ? "text" : "password"}
                   required
                   value={form.confirm}

@@ -1,0 +1,19 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: pride-backend-pdb
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: pride-backend
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: pride-frontend-pdb
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: pride-frontend
