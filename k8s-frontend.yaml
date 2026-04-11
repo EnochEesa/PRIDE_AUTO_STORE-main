@@ -22,7 +22,7 @@ spec:
       terminationGracePeriodSeconds: 60
       automountServiceAccountToken: false
       securityContext:
-        runAsUser: 10001
+        runAsUser: 10000
         fsGroup: 20000
         runAsNonRoot: true
       containers:
@@ -33,7 +33,7 @@ spec:
           capabilities:
             drop:
               - ALL
-          runAsUser: 10001
+          runAsUser: 10000
           readOnlyRootFilesystem: true
           allowPrivilegeEscalation: false
         ports:
