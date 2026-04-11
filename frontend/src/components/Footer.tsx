@@ -10,7 +10,7 @@ const SOCIAL_LINKS = [
   },
   {
     label: "Facebook",
-    href: "https://www.facebook.com/people/Premier-padmini-spares/100065099156696/?utm_source=ig&utm_medium=social&utm_content=link_in_bio",
+    href: "https://www.facebook.com/profile.php?id=100065099156696",
     icon: Facebook,
   },
   {
@@ -93,13 +93,13 @@ export default function Footer() {
                   rel="noreferrer"
                   className="text-white/40 text-sm hover:text-white transition-colors"
                 >
-                  Shop No 9/23, Opposite Nehru Stadium Road,<br />Grey Town Road, Grey Town, Coimbatore-641018, Tamil Nadu
+                  9/23 Grey Town, Coimbatore – 641018
                 </a>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="w-4 h-4 text-brand-500 flex-shrink-0" />
                 <a href="tel:+919944140272" className="text-white/40 text-sm hover:text-white transition-colors">
-                  +919944140272
+                  +91 99441 40272
                 </a>
               </li>
               <li className="flex items-center gap-3">
