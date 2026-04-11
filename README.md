@@ -1,6 +1,6 @@
 # 🚗 Pride Auto Store
 
-> Production-ready full-stack website for **Pride Auto Store** — a premier automobile spare parts shop in Coimbatore, Tamil Nadu, India.
+> Production-ready full-stack e-commerce platform for **Pride Auto Store** — a premier automobile spare parts supplier.
 
 [![CI](https://github.com/EnochEesa/PRIDE_AUTO_STORE/actions/workflows/ci.yml/badge.svg)](https://github.com/EnochEesa/PRIDE_AUTO_STORE/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -8,8 +8,8 @@
 ---
 
 ## 🌐 Live Demo
-- **Frontend:** [prideautostore.vercel.app](https://prideautostore.vercel.app) *(coming soon)*
-- **API:** [pride-auto-api.onrender.com](https://pride-auto-api.onrender.com) *(coming soon)*
+- **Frontend / Customer Portal:** [pride-auto-store.vercel.app](https://pride-auto-store.vercel.app) *(live)*
+- **API Backend:** [pride-auto-api.onrender.com](https://pride-auto-api.onrender.com) *(live)*
 
 ---
 
@@ -17,35 +17,30 @@
 
 | Layer | Technology |
 |---|---|
-| Frontend | Next.js 14 (App Router), TypeScript, Tailwind CSS |
+| Frontend | Next.js 15 (App Router), TypeScript, Tailwind CSS |
 | Backend | Node.js, Express, TypeScript |
 | Database | MongoDB Atlas (free tier) |
-| Auth | JWT + bcrypt |
-| Image CDN | Cloudinary |
-| Hosting | Vercel (frontend) + Render (backend) |
-| CI/CD | GitHub Actions |
-| Containerisation | Docker + Docker Compose |
-| Live Chat | Tawk.to |
+| Auth & Security | JWT Auth, Google Auth Library, Snyk SAST |
+| Containerisation | Docker, Docker Compose |
+| Orchestration | Kubernetes (K8s) deployment manifests |
+| CI/CD | GitHub Actions, Trivy Image Scanning |
 
 ---
 
 ## 🗂️ Project Structure
 
-```
+```text
 PRIDE_AUTO_STORE/
-├── frontend/               # Next.js 14 App Router
-│   ├── src/app/            # Pages: Home, About, Products, Contact, Cart
-│   ├── src/components/     # Navbar, Hero, Footer, ProductCard, etc.
-│   └── src/context/        # AuthContext, CartContext
+├── frontend/               # Next.js 15 App Router React frontend
 ├── backend/                # Node.js + Express REST API
 │   └── src/
-│       ├── config/         # DB, logger, env validation
-│       ├── controllers/    # Products, Inquiries, Admin
-│       ├── middleware/      # Auth, rate limiter
-│       ├── models/         # Mongoose schemas (Product, Inquiry, Admin)
-│       └── routes/         # API routes
-├── .github/workflows/      # CI/CD pipeline
-└── docker-compose.yml      # Local dev orchestration
+│       ├── controllers/
+│       ├── middleware/
+│       ├── models/
+│       └── routes/
+├── k8s-*.yaml              # Kubernetes Deployment & Service Manifests
+├── docker-compose.yml      # Local dev orchestration
+└── .github/workflows/      # Automated deployment & CI pipelines
 ```
 
 ---
@@ -54,106 +49,78 @@ PRIDE_AUTO_STORE/
 
 ### Prerequisites
 - Node.js 20+
-- Git
-- MongoDB Atlas account (free) or local MongoDB
+- Docker Desktop (optional for local infra)
+- MongoDB Atlas URI
 
-### 1. Clone the repo
-```bash
-git clone https://github.com/EnochEesa/PRIDE_AUTO_STORE.git
-cd PRIDE_AUTO_STORE
-```
+### Standard Local Run
+1. **Clone the repo**
+   ```bash
+   git clone https://github.com/EnochEesa/PRIDE_AUTO_STORE-main.git
+   cd PRIDE_AUTO_STORE-main
+   ```
 
-### 2. Setup Backend
-```bash
-cd backend
-cp .env.example .env        # Fill in your values
-npm install
-npm run dev                  # Runs on http://localhost:5000
-```
+2. **Backend Services**
+   ```bash
+   cd backend
+   cp .env.example .env        # Set your MongoDB URI
+   npm install
+   npm run dev                  # http://localhost:5000
+   ```
 
-### 3. Setup Frontend
-```bash
-cd frontend
-cp .env.example .env.local  # Fill in your values
-npm install
-npm run dev                  # Runs on http://localhost:3000
-```
+3. **Frontend Application**
+   ```bash
+   cd frontend
+   cp .env.example .env.local  # Set your API endpoints
+   npm install
+   npm run dev                  # http://localhost:3000
+   ```
 
-### 4. Or run with Docker
+### Docker Compose Run
 ```bash
-cp backend/.env.example backend/.env   # Fill in values
 docker compose up --build
 ```
 
 ---
 
-## 🔑 Environment Variables
+## 🚢 Infrastructure & Deployment
 
-### Backend (`backend/.env`)
-| Variable | Description |
-|---|---|
-| `MONGODB_URI` | MongoDB Atlas connection string |
-| `JWT_SECRET` | 64-char random string for JWT signing |
-| `FRONTEND_URL` | Your Vercel URL (for CORS) |
-| `EMAIL_USER` | Gmail address for notifications |
-| `EMAIL_PASS` | Gmail App Password (not your real password) |
-| `ADMIN_EMAIL` | Where to receive inquiry notifications |
+The infrastructure has been heavily hardened and configured for scalable container orchestration.
 
-### Frontend (`frontend/.env.local`)
-| Variable | Description |
-|---|---|
-| `NEXT_PUBLIC_API_URL` | Your Render API URL |
-| `NEXT_PUBLIC_GA_ID` | Google Analytics measurement ID |
+### Kubernetes Deployment
+Production workloads are configured via Kubernetes manifests enforcing high-UID non-root security contexts (`runAsUser: 10000`) for immutable production environments.
 
----
+To deploy to an existing cluster:
+```bash
+kubectl apply -f k8s-backend.yaml
+kubectl apply -f k8s-frontend.yaml
+kubectl apply -f k8s-pdb.yaml
+```
 
-## 📡 API Endpoints
-
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| GET | `/api/health` | — | Health check |
-| GET | `/api/products` | — | List products (filterable) |
-| GET | `/api/products/:slug` | — | Get single product |
-| POST | `/api/products` | Admin JWT | Create product |
-| PUT | `/api/products/:id` | Admin JWT | Update product |
-| DELETE | `/api/products/:id` | Admin JWT | Delete product |
-| POST | `/api/inquiries` | — | Submit inquiry |
-| GET | `/api/inquiries` | Admin JWT | List inquiries |
-| POST | `/api/admin/login` | — | Admin login |
+### Automated CI/CD
+Deployments are handled autonomously by GitHub Actions (`.github/workflows/deploy.yml`):
+1. **Source Tracking:** Changes pushed to `main` trigger the pipeline.
+2. **Container Build & Registry:** Images are built and strictly versioned to GHCR.
+3. **Vulnerability Scanning:** Aquasecurity Trivy scans images for HIGH/CRITICAL CVEs before release.
+4. **Platform Webhooks:** Successful builds ping Vercel & Render via Webhook secrets for zero-downtime cutovers.
 
 ---
 
-## 🚢 Deployment
+## 🔒 Security Posture & Standards
 
-### Free-tier stack (₹0/month)
-1. **MongoDB Atlas** → cloud.mongodb.com → Free M0 cluster (Mumbai)
-2. **Render** → render.com → Web Service → connect GitHub repo → `/backend`
-3. **Vercel** → vercel.com → Import repo → root dir: `frontend`
-
-See [SETUP.md](SETUP.md) for step-by-step deployment instructions.
-
----
-
-## 🔒 Security Features
-- Helmet.js security headers
-- CORS whitelisting
-- Rate limiting (100 req/15min global, 5 inquiries/hour)
-- express-mongo-sanitize (NoSQL injection protection)
-- JWT authentication for admin routes
-- bcrypt password hashing (12 rounds)
-- Input validation on all POST routes
-- Environment secrets via GitHub Secrets
+Security is implemented natively throughout the SDLC:
+- **Application Routing:** Helmet.js & CORS whitelisting prevent execution attacks.
+- **Data Sanitization:** `express-mongo-sanitize` guarantees absolute query safety.
+- **Code Hardening:** Automated Snyk SAST testing governs hardcoded tokens, secret sprawl, and package constraints globally.
+- **Orchestration Checks:** Pod definitions explicitly drop all capabilities and govern root-access limits.
 
 ---
 
 ## 📍 Business Info
 - **Name:** Pride Auto Store
-- **Address:** 9/23, Grey Town, Opposite Nehru Stadium Road, Coimbatore – 641014
-- **Phone:** 0422-4392481
-- **Hours:** Mon–Sat, 10:00 AM – 8:00 PM
-- **Instagram:** [@fiat_padmini_](https://www.instagram.com/fiat_padmini_/)
+- **Location:** Coimbatore, Tamil Nadu, India
+- **Socials:** [@fiat_padmini_](https://www.instagram.com/fiat_padmini_/)
 
 ---
 
 ## 📄 License
-MIT © 2024 Pride Auto Store
+MIT © Pride Auto Store
