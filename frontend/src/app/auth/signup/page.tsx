@@ -47,11 +47,11 @@ export default function SignupPage() {
   return (
     <div className="min-h-screen bg-dark-900 flex">
       <div className="hidden lg:flex flex-1 relative overflow-hidden">
-        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1200&q=80')" }} />
+        <div className="absolute inset-0 bg-cover bg-center bg-[url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1200&q=80')]" />
         <div className="absolute inset-0 bg-dark-900/75" />
         <div className="relative flex flex-col justify-between p-12 w-full">
           <div>
-            <h2 className="font-display text-6xl text-white tracking-wider leading-none mb-4" style={{ fontFamily: "var(--font-display)" }}>
+            <h2 className="font-display text-6xl text-white tracking-wider leading-none mb-4">
               JOIN THE<br />COMMUNITY
             </h2>
             <p className="text-white/40 text-lg max-w-sm">Get access to exclusive deals, order tracking, and a curated list of parts for your vehicle.</p>
@@ -74,9 +74,9 @@ export default function SignupPage() {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {[
-              { label: "Full Name", key: "name", type: "text", icon: User, placeholder: "John Doe" },
-              { label: "Email Address", key: "email", type: "email", icon: Mail, placeholder: "you@example.com" },
-            ].map(({ label, key, type, icon: Icon, placeholder }) => (
+              { label: "Full Name", key: "name", type: "text", icon: User, placeholder: "John Doe", auto: "name" },
+              { label: "Email Address", key: "email", type: "email", icon: Mail, placeholder: "you@example.com", auto: "email" },
+            ].map(({ label, key, type, icon: Icon, placeholder, auto }) => (
               <div key={key}>
                 <label className="text-white/40 text-xs tracking-widest uppercase block mb-2">{label}</label>
                 <div className="relative">
@@ -87,7 +87,7 @@ export default function SignupPage() {
                     value={form[key as keyof typeof form]}
                     onChange={set(key)}
                     placeholder={placeholder}
-                    autoComplete={key === "name" ? "name" : "email"}
+                    autoComplete={auto}
                     maxLength={key === "name" ? 60 : 120}
                     className="w-full bg-dark-700 border border-white/10 pl-12 pr-4 py-3 text-white placeholder-white/20 text-sm focus:outline-none focus:border-brand-500 transition-colors"
                   />

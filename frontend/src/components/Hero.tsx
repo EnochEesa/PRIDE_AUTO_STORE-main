@@ -5,10 +5,7 @@ export default function Hero() {
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden bg-dark-900">
       <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: `url('https://motorwagon.co/wp-content/uploads/2025/01/DSC06319-scaled.jpeg')`,
-        }}
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat bg-[url('https://motorwagon.co/wp-content/uploads/2025/01/DSC06319-scaled.jpeg')]"
       />
 
       <div className="absolute inset-0 bg-gradient-to-r from-dark-900 via-dark-900/85 to-dark-900/30" />
@@ -32,7 +29,6 @@ export default function Hero() {
 
           <h1
             className="font-display text-7xl sm:text-8xl md:text-[10rem] leading-none tracking-wider mb-6 animate-on-load stagger-2"
-            style={{ fontFamily: "var(--font-display)" }}
           >
             <span className="block text-white">PREMIER</span>
             <span className="block text-gradient">PADMINI</span>
@@ -64,7 +60,6 @@ export default function Hero() {
               <div key={stat.label}>
                 <div
                   className="text-3xl font-display text-brand-400"
-                  style={{ fontFamily: "var(--font-display)" }}
                 >
                   {stat.value}
                 </div>

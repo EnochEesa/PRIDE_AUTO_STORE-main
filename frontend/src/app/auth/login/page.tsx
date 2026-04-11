@@ -36,8 +36,7 @@ function LoginContent() {
       {/* Left side: Premium Visual */}
       <div className="hidden lg:flex flex-1 relative overflow-hidden group">
         <div
-          className="absolute inset-0 bg-cover bg-center transition-transform duration-[2000ms] group-hover:scale-105"
-          style={{ backgroundImage: "url('https://motorwagon.co/wp-content/uploads/2025/01/DSC06313-scaled.jpeg')" }}
+          className="absolute inset-0 bg-cover bg-center transition-transform duration-[2000ms] group-hover:scale-105 bg-[url('https://motorwagon.co/wp-content/uploads/2025/01/DSC06313-scaled.jpeg')]"
         />
         <div className="absolute inset-0 bg-gradient-to-tr from-dark-900 via-dark-900/30 to-transparent" />
         <div className="absolute inset-0 bg-noise opacity-20" />
@@ -47,7 +46,6 @@ function LoginContent() {
             <div className="h-1 w-12 bg-brand-500 mb-8" />
             <h2 
               className="font-display text-7xl xl:text-8xl text-white tracking-widest leading-[0.9] mb-6 drop-shadow-2xl" 
-              style={{ fontFamily: "var(--font-display)" }}
             >
               WELCOME<br />
               <span className="text-gradient">BACK</span>
@@ -70,7 +68,7 @@ function LoginContent() {
         <div className="w-full max-w-md relative z-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
           <div className="mb-10">
             <p className="section-label mb-4 opacity-70">Secured Access</p>
-            <h1 className="font-display text-5xl text-white tracking-wider mb-3" style={{ fontFamily: "var(--font-display)" }}>
+            <h1 className="font-display text-5xl text-white tracking-wider mb-3">
               SIGN IN
             </h1>
             <p className="text-white/40 text-sm">
