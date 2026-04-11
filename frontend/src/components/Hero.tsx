@@ -7,7 +7,7 @@ export default function Hero() {
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: `url('https://commons.wikimedia.org/wiki/Special:FilePath/Premier_Padmini.jpg')`,
+          backgroundImage: `url('https://motorwagon.co/wp-content/uploads/2025/01/DSC06319-scaled.jpeg')`,
         }}
       />
 
@@ -27,20 +27,19 @@ export default function Hero() {
         <div className="max-w-3xl">
           <div className="flex items-center gap-3 mb-6 animate-on-load stagger-1">
             <div className="w-8 h-px bg-brand-500" />
-            <span className="section-label">Fiat & Premier Heritage Parts</span>
+            <span className="section-label">1995 Fiat Premier Padmini S1 Petrol</span>
           </div>
 
           <h1
             className="font-display text-7xl sm:text-8xl md:text-[10rem] leading-none tracking-wider mb-6 animate-on-load stagger-2"
             style={{ fontFamily: "var(--font-display)" }}
           >
-            <span className="block text-white">BUILT</span>
-            <span className="block text-gradient">TO LAST</span>
+            <span className="block text-white">PREMIER</span>
+            <span className="block text-gradient">PADMINI</span>
           </h1>
 
           <p className="text-white/60 text-lg md:text-xl leading-relaxed max-w-xl mb-10 animate-on-load stagger-3">
-            Specialist spares for Fiat Padmini, Premier classics, and dependable daily
-            drivers. Heritage fitment knowledge, modern nationwide delivery.
+            Impeccably maintained in its original Green finish, TN registered. Experience the legacy of a true classic. Available now for 8.49 Lakhs.
           </p>
 
           <div className="flex flex-wrap gap-4 animate-on-load stagger-4">
