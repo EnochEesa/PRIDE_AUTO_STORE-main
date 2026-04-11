@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import { CartProvider } from "@/context/CartContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   title: "Pride Auto Store — Quality Spare Parts",
@@ -41,6 +42,7 @@ export default function RootLayout({
             </CartProvider>
           </AuthProvider>
         </GoogleOAuthProvider>
+        <Analytics />
       </body>
     </html>
   );
