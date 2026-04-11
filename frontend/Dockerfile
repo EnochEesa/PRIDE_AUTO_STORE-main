@@ -14,7 +14,7 @@ FROM node:20-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+RUN addgroup -g 10000 -S appgroup && adduser -u 10000 -S appuser -G appgroup
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 USER appuser
