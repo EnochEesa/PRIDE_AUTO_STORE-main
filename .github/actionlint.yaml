@@ -1,0 +1,11 @@
+self-hosted-runner:
+  labels: []
+
+# Suppress false-positive "context access might be invalid" warnings for
+# optional deploy hook secrets. These secrets are intentionally optional —
+# the workflow handles their absence gracefully at runtime.
+config:
+  known-secrets:
+    - VERCEL_DEPLOY_HOOK_URL
+    - RENDER_DEPLOY_HOOK_URL
+    - GITHUB_TOKEN
